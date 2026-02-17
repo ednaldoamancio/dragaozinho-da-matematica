@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dragãozinho da Matemática</title>
+    
+    <!-- Bibliotecas necessárias -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Estilos -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+        
+        body { font-family: 'Fredoka', sans-serif; }
+        
+        /* Previne comportamento elástico e garante app-like feel */
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: fixed; /* Ajuda a travar o scroll do body no iOS */
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 2s ease-in-out infinite; }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+        .animate-confetti { animation: confetti 3s linear infinite; }
+        
+        .animate-fade-in-down { animation: fadeInDown 1s ease-out; }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none;  scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white">
+    <div id="root" class="h-full w-full"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- Ícones SVG ---
+        const IconVolume = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>;
+        const IconMute = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>;
+        const IconBack = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>;
+        const IconLock = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-30"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
+
+        // --- CONFIGURAÇÃO ---
+        const GAME_PHASES = [
+            { id: 1, start: 0, end: 49, bg: 'fundo1.jpg', dragonStatic: 'dragao1.png', dragonGif: 'dragao1.gif', color: 'from-green-400 to-blue-500' },
+            { id: 2, start: 50, end: 99, bg: 'fundo2.jpg', dragonStatic: 'dragao2.png', dragonGif: 'dragao2.gif', color: 'from-blue-400 to-indigo-500' },
+            { id: 3, start: 100, end: 149, bg: 'fundo3.jpg', dragonStatic: 'dragao3.png', dragonGif: 'dragao3.gif', color: 'from-indigo-400 to-purple-500' },
+            { id: 4, start: 150, end: 199, bg: 'fundo4.jpg', dragonStatic: 'dragao4.png', dragonGif: 'dragao4.gif', color: 'from-purple-400 to-pink-500' },
+            { id: 5, start: 200, end: 249, bg: 'fundo5.jpg', dragonStatic: 'dragao5.png', dragonGif: 'dragao5.gif', color: 'from-pink-400 to-red-500' },
+            { id: 6, start: 250, end: 299, bg: 'fundo6.jpg', dragonStatic: 'dragao6.png', dragonGif: 'dragao6.gif', color: 'from-orange-400 to-yellow-500' },
+        ];
+
+        function App() {
+            const [currentPhaseIndex, setCurrentPhaseIndex] = useState(null);
+            const [audioEnabled, setAudioEnabled] = useState(false);
+            const audioRef = useRef(null);
+
+            const startPhase = (index) => {
+                setCurrentPhaseIndex(index);
+                if (audioEnabled && audioRef.current) {
+                    audioRef.current.volume = 0.3;
+                    audioRef.current.play().catch(e => console.log("Interação necessária para áudio"));
+                }
+            };
+
+            const returnToMenu = () => {
+                setCurrentPhaseIndex(null);
+            };
+
+            const toggleAudio = () => {
+                setAudioEnabled(!audioEnabled);
+                if (!audioEnabled) {
+                    if (audioRef.current) {
+                        audioRef.current.volume = 0.3;
+                        audioRef.current.play();
+                    }
+                } else {
+                    if (audioRef.current) audioRef.current.pause();
+                }
+            };
+
+            return (
+                <div className="fixed inset-0 w-full h-full font-sans select-none bg-slate-900 text-slate-100 flex flex-col">
+                    <audio ref={audioRef} loop src="som.mp3" />
+
+                    <button 
+                        onClick={toggleAudio}
+                        className="absolute top-2 right-2 z-50 bg-black/30 hover:bg-black/50 backdrop-blur-md p-2 md:p-3 rounded-full text-white transition-all shadow-lg"
+                    >
+                        {audioEnabled ? <IconVolume /> : <IconMute />}
+                    </button>
+
+                    {currentPhaseIndex === null ? (
+                        <MainMenu phases={GAME_PHASES} onSelect={startPhase} />
+                    ) : (
+                        <GameLevel 
+                            phase={GAME_PHASES[currentPhaseIndex]} 
+                            onBack={returnToMenu} 
+                            audioEnabled={audioEnabled}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        function MainMenu({ phases, onSelect }) {
+            return (
+                <div className="flex-1 flex flex-col items-center h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 p-4 overflow-y-auto">
+                    <div className="text-center my-6 md:my-10 animate-fade-in-down shrink-0">
+                        <h1 className="text-4xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 drop-shadow-lg mb-2 tracking-tight leading-tight">
+                            Dragãozinho<br/>da Matemática
+                        </h1>
+                        <p className="text-lg md:text-2xl text-blue-200">Ajude os dragões a encontrar a caverna!</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl w-full px-2 pb-32 auto-rows-fr">
+                        {phases.map((phase, index) => (
+                            <button
+                                key={phase.id}
+                                onClick={() => onSelect(index)}
+                                className={`
+                                    relative overflow-hidden group rounded-3xl p-6 border-4 border-white/10 hover:border-yellow-400
+                                    transition-all transform hover:-translate-y-2 hover:shadow-2xl bg-gradient-to-br ${phase.color}
+                                    flex flex-col items-center justify-between min-h-[160px]
+                                `}
+                            >
+                                <div className="z-10 flex flex-col items-center gap-3 w-full">
+                                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl shadow-inner mb-2 shrink-0">
+                                        🐲
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-white drop-shadow-md">Fase {phase.id}</h2>
+                                    <div className="bg-black/30 px-4 py-1 rounded-full text-lg font-mono font-bold text-white w-full text-center">
+                                        {phase.start} até {phase.end}
+                                    </div>
+                                    {phase.id >= 4 && (
+                                        <div className="mt-1 text-xs bg-red-500/80 text-white px-2 py-1 rounded uppercase font-bold tracking-wider">
+                                            Modo Desafio
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function GameLevel({ phase, onBack, audioEnabled }) {
+            const totalNumbers = phase.end - phase.start + 1;
+            const numbers = Array.from({ length: totalNumbers }, (_, i) => phase.start + i);
+            
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [inputValue, setInputValue] = useState('');
+            const [isError, setIsError] = useState(false);
+            const [isVictory, setIsVictory] = useState(false);
+            
+            const isHardMode = phase.id >= 4;
+            const inputRef = useRef(null);
+
+            const speakNumber = (text) => {
+                if (!audioEnabled || !('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR'; 
+                utterance.rate = 1.0;     
+                utterance.pitch = 1.1;    
+                window.speechSynthesis.speak(utterance);
+            };
+            
+            const speakPhrase = (text) => {
+                if (!audioEnabled || !('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR';
+                window.speechSynthesis.speak(utterance);
+            };
+
+            useEffect(() => {
+                if (inputRef.current && !isVictory) {
+                    setTimeout(() => {
+                        inputRef.current?.focus();
+                    }, 50);
+                }
+            }, [currentIndex, isVictory]);
+
+            const handleGridClick = () => {
+                if(inputRef.current) inputRef.current.focus();
+            };
+
+            const handleInput = (e) => {
+                const val = e.target.value;
+                if (!/^\d*$/.test(val)) return;
+
+                setInputValue(val);
+                setIsError(false);
+
+                const targetNumber = numbers[currentIndex];
+                
+                if (parseInt(val) === targetNumber) {
+                    speakNumber(String(targetNumber)); 
+                    setInputValue('');
+                    setCurrentIndex(prev => prev + 1);
+                    
+                    if (currentIndex + 1 >= numbers.length) {
+                        setTimeout(() => finishLevel(), 2000); 
+                    }
+                } else if (val.length >= String(targetNumber).length) {
+                    setIsError(true);
+                    setTimeout(() => setInputValue(''), 500);
+                }
+            };
+
+            const finishLevel = () => {
+                setIsVictory(true);
+                speakPhrase("Parabéns! Você conseguiu trazer o dragãozinho para a caverna!");
+            };
+
+            const progressPercent = (currentIndex / totalNumbers) * 100;
+            const isNearEnd = progressPercent > 80;
+            const houseImage = isNearEnd ? 'casa2.gif' : 'casa.gif';
+
+            return (
+                <div 
+                    /* MUDANÇA PRINCIPAL: fixed inset-0 para travar o layout na tela */
+                    className="fixed inset-0 w-full h-full flex flex-col"
+                    style={{
+                        backgroundImage: `url(${phase.bg}), linear-gradient(to bottom, #1e293b, #0f172a)`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundBlendMode: 'overlay' 
+                    }}
+                >
+                    {/* TOPO: Botão Voltar (Fixo) */}
+                    <div className="absolute top-2 left-2 z-50">
+                        <button 
+                            onClick={onBack}
+                            className="bg-white/90 hover:bg-white text-slate-800 px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 text-sm md:text-base"
+                        >
+                            <IconBack /> Menu
+                        </button>
+                    </div>
+
+                    {/* --- PARTE 1: ÁREA DO DRAGÃO E CAMINHO (NO TOPO) --- */}
+                    {/* shrink-0 garante que essa parte NÃO encolha quando o teclado abrir */}
+                    <div className="mt-14 h-40 md:h-52 w-full bg-slate-900/60 backdrop-blur-sm border-b-4 border-yellow-500 relative flex items-center px-2 md:px-12 z-20 shrink-0">
+                        
+                        {/* Linha da trajetória */}
+                        <div className="absolute left-0 w-full h-4 bg-white/10 top-2/3 -translate-y-1/2 rounded-full mx-2 overflow-hidden">
+                             <div className="h-full bg-green-500/50 transition-all duration-700" style={{ width: `${progressPercent}%` }}></div>
+                        </div>
+                        
+                        <div className="relative w-full h-full max-w-6xl mx-auto flex items-center">
+                            
+                            {/* Dragão (Jogador) */}
+                            <div 
+                                className="absolute transition-all duration-700 ease-out z-20"
+                                style={{ 
+                                    left: `min(${progressPercent}%, 85%)`, 
+                                    transform: 'translateX(-50%)', 
+                                    top: '20%'
+                                }}
+                            >
+                                <div className="w-24 h-24 md:w-36 md:h-36 relative group">
+                                    <img 
+                                        src={isVictory ? phase.dragonStatic : phase.dragonGif} 
+                                        alt="Dragão"
+                                        className="w-full h-full object-contain drop-shadow-2xl animate-float"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                    />
+                                    <div className="hidden w-full h-full bg-green-500 rounded-full items-center justify-center text-4xl animate-bounce border-4 border-white shadow-xl">
+                                        🐉
+                                    </div>
+                                    
+                                    {isError && (
+                                        <div className="absolute -top-4 left-full bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg whitespace-nowrap animate-pulse">
+                                            Ops!
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Caverna / Mamãe Dragão */}
+                            <div className="absolute right-0 top-1/2 -translate-y-1/4 z-10 mr-1 md:mr-8">
+                                <div className="w-36 h-36 md:w-52 md:h-52 relative">
+                                    <img 
+                                        src={houseImage} 
+                                        alt="Caverna"
+                                        className="w-full h-full object-contain drop-shadow-2xl transition-opacity duration-500"
+                                        onError={(e) => {
+                                            if (e.target.src.includes('casa2')) {
+                                                e.target.src = 'casa.gif'; 
+                                            } else {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'flex';
+                                            }
+                                        }}
+                                    />
+                                    <div className="hidden w-full h-full bg-slate-700 rounded-t-full items-end justify-center pb-2 text-4xl border-4 border-slate-500">
+                                        🏰
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {/* --- PARTE 2: ÁREA DOS NÚMEROS (EMBAIXO) --- */}
+                    {/* flex-1 para ocupar o espaço restante. Quando teclado abre, isso aqui encolhe e scrolla. */}
+                    <div 
+                        className="flex-1 flex flex-col items-center p-2 z-10 overflow-y-auto no-scrollbar"
+                        onClick={handleGridClick}
+                    >
+                        <div 
+                            className="grid gap-1 md:gap-3 w-full max-w-5xl bg-slate-900/60 p-2 md:p-6 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl mb-80"
+                            style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}
+                        >
+                            {numbers.map((num, idx) => {
+                                const isCompleted = idx < currentIndex;
+                                const isCurrent = idx === currentIndex;
+                                const isTenStart = num % 10 === 0;
+                                const shouldShowNumber = !isHardMode || isCompleted || isCurrent;
+
+                                return (
+                                    <div 
+                                        key={num} 
+                                        className={`
+                                            aspect-square rounded-md md:rounded-lg flex items-center justify-center text-sm md:text-2xl lg:text-3xl font-bold transition-all duration-300 relative
+                                            ${isCompleted 
+                                                ? 'bg-green-500/90 text-white shadow-inner scale-100' 
+                                                : isCurrent 
+                                                ? 'bg-white text-slate-900 scale-110 z-20 ring-2 ring-yellow-400 shadow-xl' 
+                                                : 'bg-white/5 text-white/20 scale-95 border border-white/5'}
+                                            ${isError && isCurrent ? 'animate-shake bg-red-200 ring-red-500' : ''}
+                                        `}
+                                    >
+                                        {isCompleted ? (
+                                            <span className="animate-pop-in">{num}</span>
+                                        ) : isCurrent ? (
+                                            <input
+                                                ref={inputRef}
+                                                type="text"
+                                                value={inputValue}
+                                                onChange={handleInput}
+                                                className="w-full h-full text-center bg-transparent outline-none p-0 m-0 font-bold text-slate-900 placeholder-slate-300 rounded-lg"
+                                                placeholder="?"
+                                                autoFocus
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                            />
+                                        ) : (
+                                            shouldShowNumber ? <span>{num}</span> : <IconLock />
+                                        )}
+                                        
+                                        {isTenStart && <div className="absolute top-0 left-0 w-1 h-1 md:w-2 md:h-2 bg-yellow-400 rounded-full m-0.5 md:m-1 opacity-50"></div>}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {/* Espaço extra gigante para garantir scroll com teclado */}
+                        <div className="w-full h-[60vh] shrink-0 pointer-events-none"></div>
+                    </div>
+
+                    {/* --- TELA DE VITÓRIA --- */}
+                    {isVictory && (
+                        <div className="absolute inset-0 z-50 bg-black/90 flex items-center justify-center p-4 animate-fade-in">
+                            <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full text-center shadow-2xl relative overflow-hidden text-slate-800">
+                                <div className="absolute inset-0 pointer-events-none">
+                                    {[...Array(30)].map((_, i) => (
+                                        <div key={i} className="absolute animate-confetti text-2xl" style={{
+                                            left: `${Math.random() * 100}%`,
+                                            top: `-10%`,
+                                            animationDelay: `${Math.random() * 2}s`
+                                        }}>
+                                            {['🎉', '⭐', '🎈', '🐉'][i % 4]}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <h2 className="text-3xl md:text-4xl font-bold text-green-600 mb-4">Parabéns!</h2>
+                                <div className="text-6xl md:text-7xl mb-6 animate-bounce">🏆</div>
+                                <p className="text-lg md:text-xl text-slate-600 mb-8 font-medium">
+                                    Você uniu o dragãozinho à sua mamãe!
+                                </p>
+                                
+                                <button 
+                                    onClick={onBack}
+                                    className="w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold text-xl py-4 rounded-xl shadow-lg transition-transform transform hover:scale-105 active:scale-95 border-b-4 border-yellow-600"
+                                >
+                                    Voltar ao Menu
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
