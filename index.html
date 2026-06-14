@@ -4,19 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dragãozinho da Matemática</title>
-    
-    <!-- Bibliotecas necessárias -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Estilos -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
-        
         body { font-family: 'Fredoka', sans-serif; }
-        
         /* Previne comportamento elástico e garante app-like feel */
         html, body {
             height: 100%;
@@ -24,45 +18,38 @@
             overflow: hidden;
             position: fixed; /* Ajuda a travar o scroll do body no iOS */
         }
-        
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-5px); }
           75% { transform: translateX(5px); }
         }
         .animate-shake { animation: shake 0.3s ease-in-out; }
-        
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
         }
         .animate-float { animation: float 2s ease-in-out infinite; }
-
         @keyframes confetti {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
         }
         .animate-confetti { animation: confetti 3s linear infinite; }
-        
         .animate-fade-in-down { animation: fadeInDown 1s ease-out; }
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .animate-pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popIn {
             from { opacity: 0; transform: scale(0.5); }
             to { opacity: 1; transform: scale(1); }
         }
-        
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none;  scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-900 text-white">
     <div id="root" class="h-full w-full"></div>
-
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
@@ -71,6 +58,13 @@
         const IconMute = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>;
         const IconBack = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>;
         const IconLock = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-30"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
+        
+        // Ícone customizado de Tela Cheia
+        const IconFullscreen = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+        );
 
         // --- CONFIGURAÇÃO ---
         const GAME_PHASES = [
@@ -85,7 +79,33 @@
         function App() {
             const [currentPhaseIndex, setCurrentPhaseIndex] = useState(null);
             const [audioEnabled, setAudioEnabled] = useState(false);
+            const [isFullscreen, setIsFullscreen] = useState(false);
             const audioRef = useRef(null);
+
+            // Escuta mudanças nativas de tela cheia para manter sincronia
+            useEffect(() => {
+                const handleFullscreenChange = () => {
+                    setIsFullscreen(!!document.fullscreenElement);
+                };
+                document.addEventListener('fullscreenchange', handleFullscreenChange);
+                return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            }, []);
+
+            // Gatilho automatizado para tentar tela cheia no primeiro clique/toque
+            const handleGlobalInteraction = () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
+            };
+
+            const toggleFullscreen = (e) => {
+                if (e) e.stopPropagation();
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch((err) => console.log(err));
+                } else {
+                    document.exitFullscreen();
+                }
+            };
 
             const startPhase = (index) => {
                 setCurrentPhaseIndex(index);
@@ -99,7 +119,8 @@
                 setCurrentPhaseIndex(null);
             };
 
-            const toggleAudio = () => {
+            const toggleAudio = (e) => {
+                if (e) e.stopPropagation();
                 setAudioEnabled(!audioEnabled);
                 if (!audioEnabled) {
                     if (audioRef.current) {
@@ -112,15 +133,31 @@
             };
 
             return (
-                <div className="fixed inset-0 w-full h-full font-sans select-none bg-slate-900 text-slate-100 flex flex-col">
+                <div 
+                    onClick={handleGlobalInteraction}
+                    onTouchStart={handleGlobalInteraction}
+                    className="fixed inset-0 w-full h-full font-sans select-none bg-slate-900 text-slate-100 flex flex-col"
+                >
                     <audio ref={audioRef} loop src="som.mp3" />
 
-                    <button 
-                        onClick={toggleAudio}
-                        className="absolute top-2 right-2 z-50 bg-black/30 hover:bg-black/50 backdrop-blur-md p-2 md:p-3 rounded-full text-white transition-all shadow-lg"
-                    >
-                        {audioEnabled ? <IconVolume /> : <IconMute />}
-                    </button>
+                    {/* Controles do Canto Superior Direito */}
+                    <div className="absolute top-2 right-2 z-50 flex gap-2">
+                        <button 
+                            onClick={toggleFullscreen}
+                            className={`backdrop-blur-md p-2 md:p-3 rounded-full text-white transition-all shadow-lg border ${
+                                isFullscreen ? 'bg-emerald-600 border-emerald-400' : 'bg-black/30 hover:bg-black/50 border-white/10'
+                            }`}
+                            title="Tela Cheia"
+                        >
+                            <IconFullscreen />
+                        </button>
+                        <button 
+                            onClick={toggleAudio}
+                            className="bg-black/30 hover:bg-black/50 backdrop-blur-md p-2 md:p-3 rounded-full text-white transition-all shadow-lg border border-white/10"
+                        >
+                            {audioEnabled ? <IconVolume /> : <IconMute />}
+                        </button>
+                    </div>
 
                     {currentPhaseIndex === null ? (
                         <MainMenu phases={GAME_PHASES} onSelect={startPhase} />
@@ -129,6 +166,8 @@
                             phase={GAME_PHASES[currentPhaseIndex]} 
                             onBack={returnToMenu} 
                             audioEnabled={audioEnabled}
+                            toggleFullscreen={toggleFullscreen}
+                            isFullscreen={isFullscreen}
                         />
                     )}
                 </div>
@@ -178,15 +217,15 @@
             );
         }
 
-        function GameLevel({ phase, onBack, audioEnabled }) {
+        function GameLevel({ phase, onBack, audioEnabled, toggleFullscreen, isFullscreen }) {
             const totalNumbers = phase.end - phase.start + 1;
             const numbers = Array.from({ length: totalNumbers }, (_, i) => phase.start + i);
-            
+                        
             const [currentIndex, setCurrentIndex] = useState(0);
             const [inputValue, setInputValue] = useState('');
             const [isError, setIsError] = useState(false);
             const [isVictory, setIsVictory] = useState(false);
-            
+                        
             const isHardMode = phase.id >= 4;
             const inputRef = useRef(null);
 
@@ -195,11 +234,11 @@
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'pt-BR'; 
-                utterance.rate = 1.0;     
-                utterance.pitch = 1.1;    
+                utterance.rate = 1.0; 
+                utterance.pitch = 1.1;
                 window.speechSynthesis.speak(utterance);
             };
-            
+                        
             const speakPhrase = (text) => {
                 if (!audioEnabled || !('speechSynthesis' in window)) return;
                 window.speechSynthesis.cancel();
@@ -228,12 +267,11 @@
                 setIsError(false);
 
                 const targetNumber = numbers[currentIndex];
-                
                 if (parseInt(val) === targetNumber) {
                     speakNumber(String(targetNumber)); 
                     setInputValue('');
                     setCurrentIndex(prev => prev + 1);
-                    
+                                        
                     if (currentIndex + 1 >= numbers.length) {
                         setTimeout(() => finishLevel(), 2000); 
                     }
@@ -254,43 +292,48 @@
 
             return (
                 <div 
-                    /* MUDANÇA PRINCIPAL: fixed inset-0 para travar o layout na tela */
                     className="fixed inset-0 w-full h-full flex flex-col"
                     style={{
                         backgroundImage: `url(${phase.bg}), linear-gradient(to bottom, #1e293b, #0f172a)`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundBlendMode: 'overlay' 
-                    }}
+                     }}
                 >
-                    {/* TOPO: Botão Voltar (Fixo) */}
-                    <div className="absolute top-2 left-2 z-50">
+                    {/* TOPO: Botões Menu e Tela Inteira (Fixo à esquerda) */}
+                    <div className="absolute top-2 left-2 z-50 flex gap-2">
                         <button 
                             onClick={onBack}
-                            className="bg-white/90 hover:bg-white text-slate-800 px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 transition-transform active:scale-95 text-sm md:text-base"
+                            className="bg-white/90 hover:bg-white text-slate-800 px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 transition-transform transform active:scale-95 text-sm md:text-base border border-slate-300"
                         >
                             <IconBack /> Menu
                         </button>
+                        <button 
+                            onClick={toggleFullscreen}
+                            className={`px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-1 transition-transform transform active:scale-95 text-xs md:text-sm border ${
+                                isFullscreen 
+                                ? 'bg-red-500 hover:bg-red-600 text-white border-red-400' 
+                                : 'bg-slate-800/90 hover:bg-slate-800 text-yellow-400 border-slate-600'
+                            }`}
+                        >
+                            {isFullscreen ? '✖ Sair' : '⛶ Tela Cheia'}
+                        </button>
                     </div>
 
-                    {/* --- PARTE 1: ÁREA DO DRAGÃO E CAMINHO (NO TOPO) --- */}
-                    {/* shrink-0 garante que essa parte NÃO encolha quando o teclado abrir */}
+                    {/* --- PARTE 1: ÁREA DO DRAGÃO AND CAMINHO (NO TOPO) --- */}
                     <div className="mt-14 h-40 md:h-52 w-full bg-slate-900/60 backdrop-blur-sm border-b-4 border-yellow-500 relative flex items-center px-2 md:px-12 z-20 shrink-0">
-                        
-                        {/* Linha da trajetória */}
-                        <div className="absolute left-0 w-full h-4 bg-white/10 top-2/3 -translate-y-1/2 rounded-full mx-2 overflow-hidden">
+                        <div className="absolute left-0 w-full h-4 bg-white/10 top-2/3 -translate-y-1/2 rounded-full mx-2 overflow-hidden"> 
                              <div className="h-full bg-green-500/50 transition-all duration-700" style={{ width: `${progressPercent}%` }}></div>
                         </div>
                         
                         <div className="relative w-full h-full max-w-6xl mx-auto flex items-center">
-                            
-                            {/* Dragão (Jogador) */}
+                            {/* Dragão */}
                             <div 
                                 className="absolute transition-all duration-700 ease-out z-20"
                                 style={{ 
-                                    left: `min(${progressPercent}%, 85%)`, 
-                                    transform: 'translateX(-50%)', 
-                                    top: '20%'
+                                     left: `min(${progressPercent}%, 85%)`,
+                                     transform: 'translateX(-50%)',
+                                     top: '20%'
                                 }}
                             >
                                 <div className="w-24 h-24 md:w-36 md:h-36 relative group">
@@ -315,7 +358,7 @@
                                 </div>
                             </div>
 
-                            {/* Caverna / Mamãe Dragão */}
+                            {/* Caverna */}
                             <div className="absolute right-0 top-1/2 -translate-y-1/4 z-10 mr-1 md:mr-8">
                                 <div className="w-36 h-36 md:w-52 md:h-52 relative">
                                     <img 
@@ -325,7 +368,7 @@
                                         onError={(e) => {
                                             if (e.target.src.includes('casa2')) {
                                                 e.target.src = 'casa.gif'; 
-                                            } else {
+                                             } else {
                                                 e.target.style.display = 'none';
                                                 e.target.nextSibling.style.display = 'flex';
                                             }
@@ -336,12 +379,10 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
                     {/* --- PARTE 2: ÁREA DOS NÚMEROS (EMBAIXO) --- */}
-                    {/* flex-1 para ocupar o espaço restante. Quando teclado abre, isso aqui encolhe e scrolla. */}
                     <div 
                         className="flex-1 flex flex-col items-center p-2 z-10 overflow-y-auto no-scrollbar"
                         onClick={handleGridClick}
@@ -392,7 +433,6 @@
                                 );
                             })}
                         </div>
-                        {/* Espaço extra gigante para garantir scroll com teclado */}
                         <div className="w-full h-[60vh] shrink-0 pointer-events-none"></div>
                     </div>
 
