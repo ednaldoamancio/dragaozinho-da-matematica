@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Fredoka:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
         body { font-family: 'Fredoka', sans-serif; height: 100vh; overflow: hidden; }
         .sky-bg { background: linear-gradient(to bottom, #0a0f24, #27356a); }
     </style>
@@ -21,7 +21,7 @@
         const { useState } = React;
 
         function App() {
-            const [screen, setScreen] = useState('menu'); // menu, map, game
+            const [screen, setScreen] = useState('menu');
             const [soundOn, setSoundOn] = useState(true);
             const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -35,30 +35,30 @@
                 }
             };
 
-            // Tela de Menu Principal
+            const HeaderControls = () => (
+                <div className="absolute top-4 right-4 flex gap-3 z-50">
+                    <button onClick={() => setSoundOn(!soundOn)} className="bg-indigo-900/80 p-3 rounded-full border border-yellow-600 text-white">
+                        {soundOn ? "🔊" : "🔇"}
+                    </button>
+                    <button onClick={toggleFullscreen} className="bg-indigo-900/80 p-3 rounded-full border border-yellow-600 text-white">
+                        {isFullscreen ? "🗜️" : "🖥️"}
+                    </button>
+                </div>
+            );
+
+            // TELA DE MENU PRINCIPAL
             if (screen === 'menu') {
                 return (
                     <div className="h-full w-full sky-bg flex flex-col items-center justify-center text-white p-4">
-                        {/* Controles Globais */}
-                        <div className="absolute top-4 right-4 flex gap-3">
-                            <button onClick={() => setSoundOn(!soundOn)} className="bg-indigo-900/80 p-3 rounded-full border border-yellow-600">
-                                {soundOn ? "🔊" : "🔇"}
-                            </button>
-                            <button onClick={toggleFullscreen} className="bg-indigo-900/80 p-3 rounded-full border border-yellow-600">
-                                {isFullscreen ? "🗜️" : "🖥️"}
-                            </button>
-                        </div>
-
-                        <h1 className="text-4xl text-yellow-300 font-bold mb-8 text-center">Dragãozinho da Matemática</h1>
-                        
-                        {/* Dragão GIF */}
+                        <HeaderControls />
+                        <h1 className="text-4xl text-yellow-300 font-bold mb-8 text-center drop-shadow-lg">Dragãozinho da Matemática</h1>
                         <img src="dragao1.gif" alt="Dragão" className="w-48 h-48 mb-8 object-contain" />
 
                         <div className="flex flex-col gap-4 w-full max-w-xs">
-                            <button onClick={() => setScreen('map')} className="bg-emerald-600 py-4 rounded-xl font-bold text-lg hover:bg-emerald-500 transition">
+                            <button onClick={() => setScreen('map')} className="bg-emerald-600 py-4 rounded-xl font-bold text-lg hover:bg-emerald-500 transition shadow-lg border-b-4 border-emerald-800">
                                 Iniciar Aventura
                             </button>
-                            <button onClick={() => setScreen('map')} className="bg-indigo-600 py-4 rounded-xl font-bold text-lg hover:bg-indigo-500 transition">
+                            <button onClick={() => setScreen('map')} className="bg-indigo-600 py-4 rounded-xl font-bold text-lg hover:bg-indigo-500 transition shadow-lg border-b-4 border-indigo-800">
                                 Ver Reinos
                             </button>
                         </div>
@@ -66,13 +66,23 @@
                 );
             }
 
-            // Simulação simples da transição para a tela de mapa
+            // TELA DE MAPA (MENU DE FASES)
             return (
-                <div className="h-full w-full sky-bg flex flex-col items-center justify-center text-white p-6">
-                    <h2 className="text-2xl mb-6">Mapa dos Reinos</h2>
-                    <p className="mb-8">Bem-vindo à jornada! Escolha um desafio.</p>
-                    <button onClick={() => setScreen('menu')} className="bg-red-600 px-6 py-2 rounded-lg">
-                        Voltar ao Menu
+                <div className="h-full w-full sky-bg flex flex-col items-center p-6 text-white overflow-y-auto">
+                    <HeaderControls />
+                    <h2 className="text-3xl font-bold text-yellow-300 mb-8 mt-12">Escolha seu Reino</h2>
+                    
+                    <div className="grid grid-cols-2 gap-4 w-full max-w-lg mb-8">
+                        {[1, 2, 3, 4, 5, 6].map(num => (
+                            <button key={num} className="bg-slate-800 p-6 rounded-2xl border-2 border-indigo-500 hover:bg-indigo-700 transition flex flex-col items-center gap-2">
+                                <span className="text-4xl">🐲</span>
+                                <span className="font-bold">Reino {num}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    <button onClick={() => setScreen('menu')} className="bg-red-600 px-8 py-3 rounded-xl font-bold shadow-lg border-b-4 border-red-800">
+                        Voltar ao Início
                     </button>
                 </div>
             );
