@@ -348,20 +348,27 @@
             margin: 15px 20px;
             background: rgba(0,0,0,0.4);
             border-radius: 50px;
-            padding: 10px 20px;
+            padding: 12px 24px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
         }
         
+        .progress-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--ouro-real);
+        }
+        
         .progress-bar {
             flex: 1;
-            height: 12px;
+            height: 16px;
             background: rgba(255,255,255,0.2);
             border-radius: 10px;
             overflow: hidden;
+            min-width: 150px;
         }
         
         .progress-fill {
@@ -374,11 +381,11 @@
         .numbers-grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
-            gap: 8px;
+            gap: 12px;
             max-width: 95%;
             margin: 20px auto;
             background: rgba(0,0,0,0.4);
-            padding: 20px;
+            padding: 25px;
             border-radius: 30px;
             backdrop-filter: blur(5px);
         }
@@ -386,28 +393,29 @@
         .number-cell {
             aspect-ratio: 1;
             background: rgba(255,255,255,0.1);
-            border-radius: 10px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 28px;
             font-weight: bold;
             transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.15);
         }
         
         .number-cell.completed {
             background: var(--verde-dragao);
             color: white;
             transform: scale(0.95);
+            border-color: var(--ouro-real);
         }
         
         .number-cell.current {
             background: var(--ouro-real);
             color: #1a0a2e;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(212,168,67,0.5);
-            border: 2px solid white;
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(212,168,67,0.6);
+            border: 3px solid white;
         }
         
         .number-cell input {
@@ -416,11 +424,12 @@
             text-align: center;
             background: transparent;
             border: none;
-            font-size: 18px;
+            font-size: 32px;
             font-weight: bold;
             color: #1a0a2e;
             outline: none;
-            border-radius: 10px;
+            border-radius: 15px;
+            font-family: 'Nunito', sans-serif;
         }
         
         .number-cell.error {
@@ -430,42 +439,63 @@
         
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
         }
         
+        /* Área do Dragão e Caverna - TEMA CENTRAL MAIOR */
         .dragons-area {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            margin: 0 20px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 60px;
+            padding: 30px 40px;
+            margin: 20px 30px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 80px;
             position: relative;
+            border: 2px solid rgba(212,168,67,0.3);
         }
         
         .dragon-player {
             position: relative;
-            transition: left 0.7s ease-out;
+            transition: margin-left 0.7s ease-out;
             z-index: 5;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3));
+        }
+        
+        .dragon-player img {
+            width: 110px;
+            height: auto;
+            animation: floatDragon 2s ease-in-out infinite;
+        }
+        
+        @keyframes floatDragon {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
         }
         
         .dragon-cave {
             text-align: center;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3));
         }
         
         .cave-img {
-            width: 100px;
+            width: 130px;
             height: auto;
+            animation: floatCave 2.5s ease-in-out infinite;
+        }
+        
+        @keyframes floatCave {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
         }
         
         .path-line {
             position: absolute;
             top: 50%;
-            left: 10%;
-            right: 10%;
-            height: 8px;
+            left: 12%;
+            right: 12%;
+            height: 10px;
             background: rgba(255,255,255,0.2);
             border-radius: 10px;
             transform: translateY(-50%);
@@ -475,13 +505,28 @@
         .path-fill {
             position: absolute;
             top: 50%;
-            left: 10%;
-            height: 8px;
+            left: 12%;
+            height: 10px;
             background: linear-gradient(90deg, var(--verde-dragao), var(--lime));
             border-radius: 10px;
             transform: translateY(-50%);
             transition: width 0.5s ease;
             z-index: 1;
+            box-shadow: 0 0 10px rgba(45,142,95,0.5);
+        }
+        
+        .mom-dragon {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 15px;
+            border-radius: 50px;
+            white-space: nowrap;
+            color: var(--ouro-real);
+            font-weight: bold;
         }
         
         .victory-overlay {
@@ -509,13 +554,13 @@
             border-radius: 30px;
             padding: 40px;
             text-align: center;
-            max-width: 400px;
+            max-width: 450px;
             width: 90%;
         }
         
         .victory-card h2 {
             font-family: 'Cinzel Decorative', cursive;
-            font-size: 32px;
+            font-size: 36px;
             color: var(--ouro-real);
             margin-bottom: 15px;
         }
@@ -523,7 +568,7 @@
         .btn-reiniciar {
             background: linear-gradient(135deg, var(--verde-dragao), var(--verde-escuro));
             border: none;
-            padding: 12px 30px;
+            padding: 14px 35px;
             border-radius: 50px;
             font-size: 18px;
             font-weight: bold;
@@ -538,17 +583,31 @@
         .decoracao {
             text-align: center;
             margin-top: 30px;
-            font-size: 20px;
+            font-size: 24px;
             opacity: 0.4;
-            letter-spacing: 8px;
+            letter-spacing: 12px;
         }
         
         @media (max-width: 768px) {
+            .numbers-grid { gap: 6px; padding: 15px; }
+            .number-cell { font-size: 18px; }
+            .number-cell input { font-size: 20px; }
+            .dragons-area { padding: 20px; margin: 10px 15px; }
+            .dragon-player img { width: 70px; }
+            .cave-img { width: 80px; }
+            .progress-text { font-size: 14px; }
+            .path-line, .path-fill { left: 15%; right: 15%; }
+            .mom-dragon { font-size: 10px; white-space: normal; text-align: center; width: 120px; bottom: -30px; }
+        }
+        
+        @media (max-width: 480px) {
             .numbers-grid { gap: 4px; padding: 10px; }
-            .number-cell { font-size: 12px; }
-            .number-cell input { font-size: 12px; }
-            .cave-img { width: 60px; }
-            .dragon-player img { width: 60px; }
+            .number-cell { font-size: 14px; }
+            .number-cell input { font-size: 16px; }
+            .dragons-area { flex-direction: column; gap: 20px; }
+            .path-line, .path-fill { display: none; }
+            .dragon-player { margin-left: 0 !important; }
+            .progress-container { flex-direction: column; }
         }
         
         .container::-webkit-scrollbar {
@@ -582,7 +641,7 @@
 
     <div class="container" id="mainContainer">
         <h1 class="titulo-reino">🐉 Trilha dos Números</h1>
-        <p class="subtitulo-magico">Ajude o dragãozinho a chegar até a caverna da mamãe! 🏰✨</p>
+        <p class="subtitulo-magico">Ajude o dragãozinho a chegar até a mamãe! 🏰✨</p>
         
         <div class="fases-grid" id="fasesGrid">
             <!-- Fases serão geradas via JS -->
@@ -601,6 +660,29 @@
             { id: 5, start: 200, end: 249, bg: 'fundo5.jpg', dragonStatic: 'dragao5.png', dragonGif: 'dragao5.gif', color: 'linear-gradient(145deg, #ff6b35, #e05a2a)' },
             { id: 6, start: 250, end: 299, bg: 'fundo6.jpg', dragonStatic: 'dragao6.png', dragonGif: 'dragao6.gif', color: 'linear-gradient(145deg, #f5c64a, #b9852f)' }
         ];
+
+        // ========== SPEECH SYNTHESIS PARA FALAR OS NÚMEROS ==========
+        let speechSynthesisSupported = 'speechSynthesis' in window;
+        
+        function falarNumero(numero) {
+            if (!speechSynthesisSupported) return;
+            
+            // Cancela qualquer fala em andamento
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(String(numero));
+            utterance.lang = 'pt-BR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            utterance.volume = 1;
+            
+            // Tenta usar uma voz feminina (mais agradável para crianças)
+            const vozes = window.speechSynthesis.getVoices();
+            const vozPtBr = vozes.find(v => v.lang === 'pt-BR' && v.name.includes('Maria'));
+            if (vozPtBr) utterance.voice = vozPtBr;
+            
+            window.speechSynthesis.speak(utterance);
+        }
 
         // ========== ÁUDIO E CONFIGURAÇÕES ==========
         let musicaFundo = null;
@@ -676,7 +758,7 @@
                     const isCurrent = idx === currentIndex;
                     
                     numbersGridHtml += `
-                        <div class="number-cell ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}" style="${isCurrent ? 'background: var(--ouro-real);' : ''}">
+                        <div class="number-cell ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
                             ${isCompleted ? num : (isCurrent ? `<input type="text" id="currentInput" placeholder="?" inputmode="numeric" style="color: #1a0a2e;">` : '?')}
                         </div>
                     `;
@@ -697,19 +779,22 @@
                             <div class="path-fill" style="width: ${progressPercent}%"></div>
                             
                             <div class="dragon-player" style="margin-left: ${Math.min(progressPercent, 85)}%;">
-                                <img src="${phase.dragonGif}" alt="Dragão" style="width: 80px; height: auto;" onerror="this.src='dragao1.gif'">
+                                <img src="${phase.dragonGif}" alt="Dragão Filhote" onerror="this.src='dragao1.gif'">
+                                <div class="mom-dragon" style="bottom: -30px;">🐉 Filhote</div>
                             </div>
                             
                             <div class="dragon-cave">
-                                <img src="${houseImage}" alt="Caverna" class="cave-img" onerror="this.src='casa.gif'">
+                                <img src="${houseImage}" alt="Caverna da Mamãe" class="cave-img" onerror="this.src='casa.gif'">
+                                <div class="mom-dragon">🐲 Mamãe Dragão</div>
                             </div>
                         </div>
                         
                         <div class="progress-container">
-                            <span>Progresso: ${currentIndex}/${totalNumbers}</span>
+                            <span class="progress-text">📊 Progresso: ${currentIndex}/${totalNumbers}</span>
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${progressPercent}%"></div>
                             </div>
+                            <span class="progress-text">⭐ ${Math.floor((currentIndex / totalNumbers) * 100)}%</span>
                         </div>
                         
                         <div class="numbers-grid" style="grid-template-columns: repeat(10, 1fr);">
@@ -727,7 +812,9 @@
                             const val = parseInt(e.target.value);
                             const targetNumber = numbers[currentIndex];
                             if (!isNaN(val) && val === targetNumber) {
-                                tocarSom(`vogal_${String(targetNumber)[0]}.ogg`);
+                                // 🔥 FALA O NÚMERO CORRETO!
+                                falarNumero(targetNumber);
+                                tocarSom('acerto.ogg');
                                 inputValues[currentIndex] = val;
                                 currentIndex++;
                                 if (currentIndex >= totalNumbers) {
@@ -756,6 +843,7 @@
             
             function finishLevel() {
                 isVictory = true;
+                falarNumero("Parabéns! Você completou a fase!");
                 tocarSom('fim_jogo.ogg');
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors: ['#d4a843', '#ff6b35', '#2d8e5f', '#fff'] });
                 
@@ -772,12 +860,12 @@
                         
                         <div class="victory-overlay" style="position: relative; background: rgba(0,0,0,0.95);">
                             <div class="victory-card">
-                                <span style="font-size: 64px;">🏆🐉✨</span>
+                                <span style="font-size: 70px;">🏆🐉✨</span>
                                 <h2>Parabéns!</h2>
-                                <p>Você completou a Fase ${phase.id}!</p>
-                                <p>O dragãozinho chegou à caverna da mamãe!</p>
+                                <p style="font-size: 20px; margin: 15px 0;">Você completou a <strong>Fase ${phase.id}</strong>!</p>
+                                <p style="font-size: 18px;">O dragãozinho encontrou a mamãe!</p>
                                 <button class="btn-reiniciar" id="btnReiniciar">🐲 Jogar Novamente</button>
-                                <button class="btn-reiniciar" id="btnVoltarFases" style="background: var(--ouro-real); margin-top: 10px;">✨ Voltar às Fases ✨</button>
+                                <button class="btn-reiniciar" id="btnVoltarFases" style="background: var(--ouro-real); margin-top: 10px; color: #1a0a2e;">✨ Voltar às Fases ✨</button>
                             </div>
                         </div>
                     </div>
@@ -817,7 +905,7 @@
             
             container.innerHTML = `
                 <h1 class="titulo-reino">🐉 Trilha dos Números</h1>
-                <p class="subtitulo-magico">Ajude o dragãozinho a chegar até a caverna da mamãe! 🏰✨</p>
+                <p class="subtitulo-magico">Ajude o dragãozinho a chegar até a mamãe! 🏰✨</p>
                 
                 <div class="fases-grid" id="fasesGrid">
                     ${fasesHtml}
@@ -895,6 +983,14 @@
             atualizarIconeFullscreen();
         }
         
+        // Carregar vozes para o Speech Synthesis
+        if (speechSynthesisSupported) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+        
         // ========== ELEMENTOS FLUTUANTES ==========
         function criarElementosFlutuantes() {
             const container = document.getElementById('elementos-container');
@@ -906,7 +1002,7 @@
                 c.className = 'elemento-flutuante';
                 c.innerText = elementos[Math.floor(Math.random() * elementos.length)];
                 c.style.left = Math.random() * 100 + '%';
-                c.style.fontSize = (Math.random() * 18 + 12) + 'px';
+                c.style.fontSize = (Math.random() * 20 + 14) + 'px';
                 c.style.color = cores[Math.floor(Math.random() * cores.length)];
                 c.style.animationDuration = (Math.random() * 7 + 5) + 's';
                 container.appendChild(c);
