@@ -3,91 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dragãozinho da Matemática — Reinos do Tesouro</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <title>Dragãozinho da Matemática</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
-        body { font-family: 'Fredoka', sans-serif; height: 100vh; overflow: hidden; }
-        .sky-bg { background: linear-gradient(to bottom, #0a0f24, #27356a); }
+        body { font-family: 'Fredoka', sans-serif; }
+        html, body { height: 100%; width: 100%; overflow: hidden; position: fixed; background-color: #0f172a; overscroll-behavior: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
     <div id="root" class="h-full w-full"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
+
+        const speak = (text) => {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'pt-BR';
+            window.speechSynthesis.speak(u);
+        };
+
+        const GAME_PHASES = [
+            { id: 1, title: "Dezenas", numbers: [10, 20, 30] },
+            { id: 2, title: "Soma Fácil", numbers: [12, 25, 34] },
+            { id: 3, title: "Centenas", numbers: [100, 200, 300] }
+        ];
 
         function App() {
-            const [screen, setScreen] = useState('menu');
-            const [soundOn, setSoundOn] = useState(true);
-            const [isFullscreen, setIsFullscreen] = useState(false);
+            const [phase, setPhase] = useState(null);
+            if(!phase) return (
+                <div className="flex flex-col items-center justify-center h-full bg-gradient-to-br from-indigo-900 to-slate-900 p-4 text-center">
+                    <h1 className="text-4xl font-bold text-yellow-400 mb-8">Dragãozinho da Matemática</h1>
+                    {GAME_PHASES.map((p) => (
+                        <button key={p.id} onClick={() => setPhase(p)} className="p-6 mb-4 rounded-3xl bg-blue-600 text-white font-bold text-2xl w-full max-w-sm">
+                            {p.title}
+                        </button>
+                    ))}
+                </div>
+            );
+            return <GameLevel phase={phase} onBack={() => setPhase(null)} />;
+        }
 
-            const toggleFullscreen = () => {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen();
-                    setIsFullscreen(true);
-                } else {
-                    document.exitFullscreen();
-                    setIsFullscreen(false);
+        function GameLevel({ phase, onBack }) {
+            const [round, setRound] = useState(0);
+            const [sum, setSum] = useState(0);
+            const [items, setItems] = useState([]);
+            const [typed, setTyped] = useState("");
+            const [won, setWon] = useState(false);
+
+            useEffect(() => {
+                const num = phase.numbers[round];
+                let list = [];
+                let c = Math.floor((num%1000)/100), d = Math.floor((num%100)/10), u = num%10;
+                for(let i=0; i<c; i++) list.push({type: 100, icon:'📦'});
+                for(let i=0; i<d; i++) list.push({type: 10, icon:'🧺'});
+                for(let i=0; i<u; i++) list.push({type: 1, icon:'🥚'});
+                setItems(list);
+                setSum(0);
+                setTyped("");
+            }, [round, phase]);
+
+            const handleType = (n) => {
+                const newTyped = typed + n;
+                setTyped(newTyped);
+                speak(n.toString());
+                
+                if(newTyped.length === phase.numbers[round].toString().length) {
+                    setTimeout(() => speak(phase.numbers[round].toString()), 500);
                 }
             };
 
-            const HeaderControls = () => (
-                <div className="absolute top-4 right-4 flex gap-3 z-50">
-                    <button onClick={() => setSoundOn(!soundOn)} className="bg-indigo-900/80 p-3 rounded-full border border-yellow-600 text-white">
-                        {soundOn ? "🔊" : "🔇"}
-                    </button>
-                    <button onClick={toggleFullscreen} className="bg-indigo-900/80 p-3 rounded-full border border-yellow-600 text-white">
-                        {isFullscreen ? "🗜️" : "🖥️"}
-                    </button>
-                </div>
-            );
+            const handleCheck = () => {
+                if(parseInt(typed) === phase.numbers[round]) {
+                    setWon(true);
+                    speak(phase.numbers[round].toString());
+                    setTimeout(() => {
+                        setWon(false);
+                        if(round + 1 < phase.numbers.length) setRound(round + 1);
+                        else onBack();
+                    }, 2000);
+                }
+            };
 
-            // TELA DE MENU PRINCIPAL
-            if (screen === 'menu') {
-                return (
-                    <div className="h-full w-full sky-bg flex flex-col items-center justify-center text-white p-4">
-                        <HeaderControls />
-                        <h1 className="text-4xl text-yellow-300 font-bold mb-8 text-center drop-shadow-lg">Dragãozinho da Matemática</h1>
-                        <img src="dragao1.gif" alt="Dragão" className="w-48 h-48 mb-8 object-contain" />
-
-                        <div className="flex flex-col gap-4 w-full max-w-xs">
-                            <button onClick={() => setScreen('map')} className="bg-emerald-600 py-4 rounded-xl font-bold text-lg hover:bg-emerald-500 transition shadow-lg border-b-4 border-emerald-800">
-                                Iniciar Aventura
-                            </button>
-                            <button onClick={() => setScreen('map')} className="bg-indigo-600 py-4 rounded-xl font-bold text-lg hover:bg-indigo-500 transition shadow-lg border-b-4 border-indigo-800">
-                                Ver Reinos
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-            // TELA DE MAPA (MENU DE FASES)
             return (
-                <div className="h-full w-full sky-bg flex flex-col items-center p-6 text-white overflow-y-auto">
-                    <HeaderControls />
-                    <h2 className="text-3xl font-bold text-yellow-300 mb-8 mt-12">Escolha seu Reino</h2>
-                    
-                    <div className="grid grid-cols-2 gap-4 w-full max-w-lg mb-8">
-                        {[1, 2, 3, 4, 5, 6].map(num => (
-                            <button key={num} className="bg-slate-800 p-6 rounded-2xl border-2 border-indigo-500 hover:bg-indigo-700 transition flex flex-col items-center gap-2">
-                                <span className="text-4xl">🐲</span>
-                                <span className="font-bold">Reino {num}</span>
-                            </button>
+                <div className="h-full flex flex-col bg-slate-900 p-2">
+                    <button onClick={onBack} className="bg-slate-700 p-2 rounded-full mb-2 text-white">Voltar</button>
+                    <div className="flex-1 flex flex-wrap items-center justify-center gap-2">
+                        {items.map((item, i) => (
+                            <React.Fragment key={i}>
+                                <div onMouseEnter={() => speak(item.type.toString())} className="w-20 h-20 bg-slate-800 border-4 border-slate-500 rounded-xl flex items-center justify-center text-4xl text-white">
+                                    {item.icon}<span className="text-xs">{item.type}</span>
+                                </div>
+                                {i < items.length - 1 && <span onMouseEnter={() => speak("mais")} className="text-3xl text-yellow-500 cursor-pointer">+</span>}
+                            </React.Fragment>
                         ))}
+                        <span onMouseEnter={() => speak("é igual a")} className="text-3xl text-white cursor-pointer">=</span>
+                        <div className="text-4xl font-bold bg-slate-700 px-6 py-2 rounded-2xl text-white">{typed || "?"}</div>
                     </div>
-
-                    <button onClick={() => setScreen('menu')} className="bg-red-600 px-8 py-3 rounded-xl font-bold shadow-lg border-b-4 border-red-800">
-                        Voltar ao Início
-                    </button>
+                    {won && <div className="fixed inset-0 bg-black/80 flex items-center justify-center text-8xl z-50">🎉</div>}
+                    <div className="grid grid-cols-5 gap-2 p-2 bg-slate-800 rounded-t-3xl">
+                        {[1,2,3,4,5,6,7,8,9,0].map(n => <button key={n} onClick={() => handleType(n)} className="bg-slate-600 py-4 rounded-xl text-3xl text-white font-bold">{n}</button>)}
+                        <button onClick={() => setTyped(typed.slice(0,-1))} className="bg-red-700 col-span-2 rounded-xl text-white">Apagar</button>
+                        <button onClick={handleCheck} className="bg-green-700 col-span-3 rounded-xl text-white font-bold">OK</button>
+                    </div>
                 </div>
             );
         }
-
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
