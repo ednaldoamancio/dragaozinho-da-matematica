@@ -23,11 +23,6 @@
             --fogo-escuro: #e05a2a;
             --tesouro: #f5c64a;
             --tesouro-escuro: #b9852f;
-            --coral: #f4845f;
-            --turquoise: #4dd0e1;
-            --lavender: #b39ddb;
-            --lime: #aed581;
-            --peach: #ffab91;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -93,6 +88,7 @@
             background: linear-gradient(180deg, rgba(10,15,36,0.95) 0%, rgba(10,15,36,0.8) 100%);
             border-bottom: 2px solid var(--ouro-real);
             backdrop-filter: blur(10px);
+            flex-shrink: 0;
         }
         
         .header-inner {
@@ -190,22 +186,21 @@
             50% { box-shadow: 0 0 30px rgba(212, 168, 67, 0.8); border-color: #ffe6a3; }
         }
 
-        /* Container principal */
+        /* Container principal - SEM ROLAGEM */
         .container {
             flex: 1;
             display: flex;
             flex-direction: column;
             position: relative;
             z-index: 10;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 20px;
+            overflow: hidden;
+            padding: 15px;
         }
 
         /* Títulos */
         .titulo-reino {
             font-family: 'Cinzel Decorative', cursive;
-            font-size: clamp(24px, 6vw, 36px);
+            font-size: clamp(20px, 4vw, 28px);
             color: var(--ouro-real);
             text-shadow: 0 0 15px rgba(245,198,74,0.5), 2px 2px 4px rgba(0,0,0,0.5);
             text-align: center;
@@ -214,27 +209,30 @@
         
         .subtitulo-magico {
             font-family: 'Dancing Script', cursive;
-            font-size: clamp(16px, 4vw, 20px);
+            font-size: clamp(14px, 3vw, 18px);
             color: rgba(255, 255, 255, 0.8);
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
-        /* Grid das fases */
+        /* Grid das fases - scroll apenas aqui */
         .fases-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             max-width: 1000px;
             margin: 0 auto;
             width: 100%;
+            overflow-y: auto;
+            max-height: calc(100vh - 180px);
+            padding: 10px;
         }
 
         .card-fase {
             background: linear-gradient(145deg, #1a1a2e, #16213e);
             border-radius: 20px;
             border: 2px solid var(--ouro-real);
-            padding: 25px 20px;
+            padding: 20px 15px;
             text-align: center;
             cursor: pointer;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -254,14 +252,14 @@
         
         .card-fase:hover::before { opacity: 1; }
         .card-fase:hover {
-            transform: translateY(-8px) scale(1.02);
+            transform: translateY(-5px) scale(1.02);
             box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
         
         .emoji-fase {
-            font-size: 48px;
+            font-size: 40px;
             display: block;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
             transition: transform 0.3s;
         }
@@ -272,35 +270,35 @@
         
         .numero-fase {
             font-family: 'Cinzel Decorative', cursive;
-            font-size: 24px;
+            font-size: 20px;
             color: var(--ouro-real);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .range-fase {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
             background: rgba(0,0,0,0.3);
             display: inline-block;
-            padding: 5px 15px;
+            padding: 4px 12px;
             border-radius: 50px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         
         .badge-desafio {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background: var(--fogo);
             color: white;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 50px;
             text-transform: uppercase;
         }
 
-        /* Área do jogo */
+        /* Área do jogo - SEM ROLAGEM */
         .game-area {
             position: fixed;
             top: 0;
@@ -311,16 +309,14 @@
             background: linear-gradient(180deg, var(--noite-top) 0%, var(--noite-mid) 55%, var(--noite-bottom) 100%);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            overflow: hidden;
         }
         
         .game-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            flex-shrink: 0;
             background: linear-gradient(180deg, rgba(10,15,36,0.95) 0%, rgba(10,15,36,0.9) 100%);
             border-bottom: 2px solid var(--ouro-real);
-            padding: 12px 16px;
+            padding: 10px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -331,12 +327,13 @@
         .btn-voltar-jogo {
             background: linear-gradient(135deg, #555f8a, #3a4264);
             border: 2px solid var(--ouro-real);
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 50px;
             color: var(--dourado-branco);
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 12px;
         }
         
         .btn-voltar-jogo:hover {
@@ -344,31 +341,33 @@
             background: linear-gradient(135deg, #6a759e, #4a5270);
         }
         
+        /* Progresso */
         .progress-container {
-            margin: 15px 20px;
+            flex-shrink: 0;
+            margin: 10px 20px;
             background: rgba(0,0,0,0.4);
             border-radius: 50px;
-            padding: 12px 24px;
+            padding: 8px 20px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
             justify-content: center;
         }
         
         .progress-text {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
             color: var(--ouro-real);
         }
         
         .progress-bar {
             flex: 1;
-            height: 16px;
+            height: 10px;
             background: rgba(255,255,255,0.2);
             border-radius: 10px;
             overflow: hidden;
-            min-width: 150px;
+            min-width: 120px;
         }
         
         .progress-fill {
@@ -378,124 +377,46 @@
             transition: width 0.5s ease;
         }
         
-        .numbers-grid {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 12px;
-            max-width: 95%;
-            margin: 20px auto;
-            background: rgba(0,0,0,0.4);
-            padding: 25px;
-            border-radius: 30px;
-            backdrop-filter: blur(5px);
-        }
-        
-        .number-cell {
-            aspect-ratio: 1;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: bold;
-            transition: all 0.3s;
-            border: 2px solid rgba(255,255,255,0.15);
-        }
-        
-        .number-cell.completed {
-            background: var(--verde-dragao);
-            color: white;
-            transform: scale(0.95);
-            border-color: var(--ouro-real);
-        }
-        
-        .number-cell.current {
-            background: var(--ouro-real);
-            color: #1a0a2e;
-            transform: scale(1.08);
-            box-shadow: 0 0 20px rgba(212,168,67,0.6);
-            border: 3px solid white;
-        }
-        
-        .number-cell input {
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            background: transparent;
-            border: none;
-            font-size: 32px;
-            font-weight: bold;
-            color: #1a0a2e;
-            outline: none;
-            border-radius: 15px;
-            font-family: 'Nunito', sans-serif;
-        }
-        
-        .number-cell.error {
-            background: var(--fogo);
-            animation: shake 0.3s ease-in-out;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
-        }
-        
-        /* Área do Dragão e Caverna - TEMA CENTRAL MAIOR */
+        /* Área do Dragão e Caverna */
         .dragons-area {
+            flex-shrink: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 40px;
-            margin: 20px 30px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 80px;
+            padding: 15px 30px;
+            margin: 5px 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 60px;
             position: relative;
-            border: 2px solid rgba(212,168,67,0.3);
         }
         
         .dragon-player {
             position: relative;
             transition: margin-left 0.7s ease-out;
             z-index: 5;
-            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3));
         }
         
         .dragon-player img {
-            width: 110px;
+            width: 80px;
             height: auto;
-            animation: floatDragon 2s ease-in-out infinite;
-        }
-        
-        @keyframes floatDragon {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
         
         .dragon-cave {
             text-align: center;
-            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3));
         }
         
         .cave-img {
-            width: 130px;
+            width: 90px;
             height: auto;
-            animation: floatCave 2.5s ease-in-out infinite;
-        }
-        
-        @keyframes floatCave {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
         }
         
         .path-line {
             position: absolute;
             top: 50%;
-            left: 12%;
-            right: 12%;
-            height: 10px;
+            left: 15%;
+            right: 15%;
+            height: 6px;
             background: rgba(255,255,255,0.2);
             border-radius: 10px;
             transform: translateY(-50%);
@@ -505,28 +426,100 @@
         .path-fill {
             position: absolute;
             top: 50%;
-            left: 12%;
-            height: 10px;
+            left: 15%;
+            height: 6px;
             background: linear-gradient(90deg, var(--verde-dragao), var(--lime));
             border-radius: 10px;
             transform: translateY(-50%);
             transition: width 0.5s ease;
             z-index: 1;
-            box-shadow: 0 0 10px rgba(45,142,95,0.5);
         }
         
         .mom-dragon {
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 14px;
-            background: rgba(0,0,0,0.6);
-            padding: 5px 15px;
+            font-size: 11px;
+            background: rgba(0,0,0,0.5);
+            padding: 3px 10px;
             border-radius: 50px;
+            margin-top: 5px;
             white-space: nowrap;
-            color: var(--ouro-real);
+        }
+        
+        /* Grid de números - SEM ROLAGEM, ocupa espaço restante */
+        .numbers-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+            margin: 10px 15px;
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 20px;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        .number-cell {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
             font-weight: bold;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .number-cell.completed {
+            background: var(--verde-dragao);
+            color: white;
+            transform: scale(0.95);
+        }
+        
+        .number-cell.current {
+            background: var(--ouro-real);
+            color: #1a0a2e;
+            transform: scale(1.02);
+            box-shadow: 0 0 12px rgba(212,168,67,0.5);
+            border: 2px solid white;
+        }
+        
+        .number-cell input {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a0a2e;
+            outline: none;
+            border-radius: 10px;
+        }
+        
+        .number-cell.error {
+            background: var(--fogo);
+            animation: shake 0.3s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        
+        /* Mensagem do número atual */
+        .numero-atual-msg {
+            flex-shrink: 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--ouro-real);
+            background: rgba(0,0,0,0.4);
+            margin: 5px 20px;
+            padding: 8px;
+            border-radius: 50px;
         }
         
         .victory-overlay {
@@ -535,7 +528,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 200;
             display: flex;
             align-items: center;
@@ -552,15 +545,15 @@
             background: linear-gradient(135deg, var(--noite-mid), var(--noite-bottom));
             border: 3px solid var(--ouro-real);
             border-radius: 30px;
-            padding: 40px;
+            padding: 30px;
             text-align: center;
-            max-width: 450px;
+            max-width: 350px;
             width: 90%;
         }
         
         .victory-card h2 {
             font-family: 'Cinzel Decorative', cursive;
-            font-size: 36px;
+            font-size: 28px;
             color: var(--ouro-real);
             margin-bottom: 15px;
         }
@@ -568,13 +561,13 @@
         .btn-reiniciar {
             background: linear-gradient(135deg, var(--verde-dragao), var(--verde-escuro));
             border: none;
-            padding: 14px 35px;
+            padding: 10px 25px;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: white;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 15px;
             transition: transform 0.3s;
         }
         
@@ -582,44 +575,46 @@
         
         .decoracao {
             text-align: center;
-            margin-top: 30px;
-            font-size: 24px;
+            margin-top: 15px;
+            font-size: 16px;
             opacity: 0.4;
-            letter-spacing: 12px;
+            letter-spacing: 6px;
         }
         
         @media (max-width: 768px) {
-            .numbers-grid { gap: 6px; padding: 15px; }
-            .number-cell { font-size: 18px; }
-            .number-cell input { font-size: 20px; }
-            .dragons-area { padding: 20px; margin: 10px 15px; }
-            .dragon-player img { width: 70px; }
-            .cave-img { width: 80px; }
-            .progress-text { font-size: 14px; }
-            .path-line, .path-fill { left: 15%; right: 15%; }
-            .mom-dragon { font-size: 10px; white-space: normal; text-align: center; width: 120px; bottom: -30px; }
+            .dragons-area { padding: 10px 20px; margin: 5px 10px; }
+            .dragon-player img { width: 55px; }
+            .cave-img { width: 65px; }
+            .numbers-grid { gap: 4px; padding: 8px; }
+            .number-cell { font-size: 12px; }
+            .number-cell input { font-size: 14px; }
+            .path-line, .path-fill { left: 18%; right: 18%; }
+            .mom-dragon { font-size: 9px; white-space: nowrap; }
+            .progress-text { font-size: 11px; }
+            .numero-atual-msg { font-size: 14px; }
         }
         
         @media (max-width: 480px) {
-            .numbers-grid { gap: 4px; padding: 10px; }
-            .number-cell { font-size: 14px; }
-            .number-cell input { font-size: 16px; }
-            .dragons-area { flex-direction: column; gap: 20px; }
+            .dragons-area { flex-direction: column; gap: 10px; }
             .path-line, .path-fill { display: none; }
             .dragon-player { margin-left: 0 !important; }
-            .progress-container { flex-direction: column; }
+            .numbers-grid { gap: 3px; }
+            .number-cell input { font-size: 12px; }
         }
         
-        .container::-webkit-scrollbar {
+        .fases-grid::-webkit-scrollbar,
+        .numbers-grid::-webkit-scrollbar {
             width: 4px;
         }
         
-        .container::-webkit-scrollbar-track {
+        .fases-grid::-webkit-scrollbar-track,
+        .numbers-grid::-webkit-scrollbar-track {
             background: rgba(255,255,255,0.1);
             border-radius: 10px;
         }
         
-        .container::-webkit-scrollbar-thumb {
+        .fases-grid::-webkit-scrollbar-thumb,
+        .numbers-grid::-webkit-scrollbar-thumb {
             background: var(--ouro-real);
             border-radius: 10px;
         }
@@ -643,9 +638,7 @@
         <h1 class="titulo-reino">🐉 Trilha dos Números</h1>
         <p class="subtitulo-magico">Ajude o dragãozinho a chegar até a mamãe! 🏰✨</p>
         
-        <div class="fases-grid" id="fasesGrid">
-            <!-- Fases serão geradas via JS -->
-        </div>
+        <div class="fases-grid" id="fasesGrid"></div>
         
         <div class="decoracao">🐉 🗺️ 🔢 🏆 🐲</div>
     </div>
@@ -661,26 +654,25 @@
             { id: 6, start: 250, end: 299, bg: 'fundo6.jpg', dragonStatic: 'dragao6.png', dragonGif: 'dragao6.gif', color: 'linear-gradient(145deg, #f5c64a, #b9852f)' }
         ];
 
-        // ========== SPEECH SYNTHESIS PARA FALAR OS NÚMEROS ==========
+        // ========== SPEECH SYNTHESIS ==========
         let speechSynthesisSupported = 'speechSynthesis' in window;
         
         function falarNumero(numero) {
             if (!speechSynthesisSupported) return;
-            
-            // Cancela qualquer fala em andamento
             window.speechSynthesis.cancel();
-            
             const utterance = new SpeechSynthesisUtterance(String(numero));
             utterance.lang = 'pt-BR';
-            utterance.rate = 0.9;
+            utterance.rate = 0.85;
             utterance.pitch = 1.1;
-            utterance.volume = 1;
-            
-            // Tenta usar uma voz feminina (mais agradável para crianças)
-            const vozes = window.speechSynthesis.getVoices();
-            const vozPtBr = vozes.find(v => v.lang === 'pt-BR' && v.name.includes('Maria'));
-            if (vozPtBr) utterance.voice = vozPtBr;
-            
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        function falarFrase(frase) {
+            if (!speechSynthesisSupported) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(frase);
+            utterance.lang = 'pt-BR';
+            utterance.rate = 0.9;
             window.speechSynthesis.speak(utterance);
         }
 
@@ -743,8 +735,20 @@
             const numbers = Array.from({ length: totalNumbers }, (_, i) => phase.start + i);
             
             let currentIndex = 0;
-            let inputValues = {};
-            let isVictory = false;
+            let isWaitingForAnswer = false;
+            let currentNumber = numbers[0];
+            
+            // Carregar vozes
+            if (speechSynthesisSupported) {
+                window.speechSynthesis.getVoices();
+            }
+            
+            function falarProximoNumero() {
+                if (currentIndex < totalNumbers) {
+                    const num = numbers[currentIndex];
+                    falarNumero(num);
+                }
+            }
             
             function renderGame() {
                 const container = document.getElementById('mainContainer');
@@ -759,7 +763,7 @@
                     
                     numbersGridHtml += `
                         <div class="number-cell ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
-                            ${isCompleted ? num : (isCurrent ? `<input type="text" id="currentInput" placeholder="?" inputmode="numeric" style="color: #1a0a2e;">` : '?')}
+                            ${isCompleted ? num : (isCurrent ? `<input type="text" id="currentInput" placeholder="?" inputmode="numeric" autocomplete="off">` : '?')}
                         </div>
                     `;
                 });
@@ -780,11 +784,11 @@
                             
                             <div class="dragon-player" style="margin-left: ${Math.min(progressPercent, 85)}%;">
                                 <img src="${phase.dragonGif}" alt="Dragão Filhote" onerror="this.src='dragao1.gif'">
-                                <div class="mom-dragon" style="bottom: -30px;">🐉 Filhote</div>
+                                <div class="mom-dragon">🐉 Filhote</div>
                             </div>
                             
                             <div class="dragon-cave">
-                                <img src="${houseImage}" alt="Caverna da Mamãe" class="cave-img" onerror="this.src='casa.gif'">
+                                <img src="${houseImage}" alt="Caverna" class="cave-img" onerror="this.src='casa.gif'">
                                 <div class="mom-dragon">🐲 Mamãe Dragão</div>
                             </div>
                         </div>
@@ -797,28 +801,34 @@
                             <span class="progress-text">⭐ ${Math.floor((currentIndex / totalNumbers) * 100)}%</span>
                         </div>
                         
+                        <div class="numero-atual-msg" id="numeroMsg">
+                            🔢 <span id="numeroDestaque">${numbers[currentIndex]}</span> 🔢
+                        </div>
+                        
                         <div class="numbers-grid" style="grid-template-columns: repeat(10, 1fr);">
                             ${numbersGridHtml}
                         </div>
                     </div>
                 `;
                 
+                // Fala o número atual
+                setTimeout(() => {
+                    falarNumero(numbers[currentIndex]);
+                }, 300);
+                
                 // Conectar eventos
                 const inputElement = document.getElementById('currentInput');
-                if (inputElement && !isVictory) {
+                if (inputElement) {
                     inputElement.focus();
                     inputElement.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') {
                             const val = parseInt(e.target.value);
                             const targetNumber = numbers[currentIndex];
                             if (!isNaN(val) && val === targetNumber) {
-                                // 🔥 FALA O NÚMERO CORRETO!
-                                falarNumero(targetNumber);
                                 tocarSom('acerto.ogg');
-                                inputValues[currentIndex] = val;
                                 currentIndex++;
                                 if (currentIndex >= totalNumbers) {
-                                    finishLevel();
+                                    finishLevel(phase);
                                 } else {
                                     renderGame();
                                 }
@@ -828,6 +838,7 @@
                                 setTimeout(() => cell.classList.remove('error'), 300);
                                 tocarSom('erro.ogg');
                                 e.target.value = '';
+                                falarNumero(targetNumber);
                             }
                         }
                     });
@@ -841,9 +852,8 @@
                 document.getElementById('btnFullscreenGame').onclick = toggleFullscreen;
             }
             
-            function finishLevel() {
-                isVictory = true;
-                falarNumero("Parabéns! Você completou a fase!");
+            function finishLevel(phase) {
+                falarFrase("Parabéns! Você completou a fase!");
                 tocarSom('fim_jogo.ogg');
                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors: ['#d4a843', '#ff6b35', '#2d8e5f', '#fff'] });
                 
@@ -860,10 +870,10 @@
                         
                         <div class="victory-overlay" style="position: relative; background: rgba(0,0,0,0.95);">
                             <div class="victory-card">
-                                <span style="font-size: 70px;">🏆🐉✨</span>
+                                <span style="font-size: 60px;">🏆🐉✨</span>
                                 <h2>Parabéns!</h2>
-                                <p style="font-size: 20px; margin: 15px 0;">Você completou a <strong>Fase ${phase.id}</strong>!</p>
-                                <p style="font-size: 18px;">O dragãozinho encontrou a mamãe!</p>
+                                <p>Você completou a <strong>Fase ${phase.id}</strong>!</p>
+                                <p>O dragãozinho encontrou a mamãe!</p>
                                 <button class="btn-reiniciar" id="btnReiniciar">🐲 Jogar Novamente</button>
                                 <button class="btn-reiniciar" id="btnVoltarFases" style="background: var(--ouro-real); margin-top: 10px; color: #1a0a2e;">✨ Voltar às Fases ✨</button>
                             </div>
@@ -983,7 +993,7 @@
             atualizarIconeFullscreen();
         }
         
-        // Carregar vozes para o Speech Synthesis
+        // Carregar vozes
         if (speechSynthesisSupported) {
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => {
@@ -1002,7 +1012,7 @@
                 c.className = 'elemento-flutuante';
                 c.innerText = elementos[Math.floor(Math.random() * elementos.length)];
                 c.style.left = Math.random() * 100 + '%';
-                c.style.fontSize = (Math.random() * 20 + 14) + 'px';
+                c.style.fontSize = (Math.random() * 18 + 12) + 'px';
                 c.style.color = cores[Math.floor(Math.random() * cores.length)];
                 c.style.animationDuration = (Math.random() * 7 + 5) + 's';
                 container.appendChild(c);
