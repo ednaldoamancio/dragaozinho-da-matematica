@@ -122,13 +122,9 @@
         .dragons-area { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 5px 20px; margin: 0 10px; position: relative; }
         .dragon-player { position: relative; transition: margin-left 0.7s ease-out; z-index: 5; }
         
-        /* ---> AQUI VOCÊ MUDA O TAMANHO DO DRAGÃO <--- */
-        /* width: 140px é o dobro do tamanho anterior */
         .dragon-player img { width: 140px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
         .dragon-cave { text-align: center; z-index: 5; }
         
-        /* ---> AQUI VOCÊ MUDA O TAMANHO DA CASA EM VÍDEO <--- */
-        /* width: 150px é o dobro do tamanho anterior */
         .cave-img { width: 150px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); border-radius: 8px; }
         
         .path-line { position: absolute; top: 50%; left: 15%; right: 15%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 10px; transform: translateY(-50%); z-index: 0; }
@@ -140,7 +136,6 @@
         
         .number-cell { aspect-ratio: 1; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: clamp(18px, 3.5vw, 28px); font-weight: 800; transition: all 0.3s; border: 2px solid rgba(255,255,255,0.2); }
         
-        /* Quadrados Verdes: Fonte Super Aumentada e Máximo Negrito */
         .number-cell.completed { 
             background: var(--verde-dragao); 
             color: white; 
@@ -166,10 +161,8 @@
         .btn-reiniciar:hover { transform: scale(1.05); }
 
         @media (max-width: 768px) {
-            /* ---> AQUI VOCÊ MUDA OS TAMANHOS PARA CELULARES E TABLETS <--- */
-            .dragon-player img { width: 120px; } /* Dobro do anterior (60px) */
-            .cave-img { width: 130px; } /* Dobro do anterior (65px) */
-            
+            .dragon-player img { width: 120px; } 
+            .cave-img { width: 130px; }
             .number-cell { font-size: 18px; border-width: 1px; }
             .keypad-btn { padding: 8px 5px; font-size: 22px; }
         }
@@ -235,14 +228,11 @@
         }
         function ativarSons() { audioAtivado = true; }
 
-        let faseState = { ativa: null, total: 0, currentIdx: 0, numbers: [], inputTemp: "" };
+        // Adicionei videoStage para controlar em qual etapa do vídeo a fase está
+        let faseState = { ativa: null, total: 0, currentIdx: 0, numbers: [], inputTemp: "", videoStage: 1 };
 
-        // CAPTURA DE TECLADO FÍSICO (PC)
         document.addEventListener('keydown', (e) => {
-            // Só escuta se uma fase estiver rodando
             if (!faseState.ativa) return;
-            
-            // Aceita apenas números de 0 a 9 do teclado principal ou teclado numérico
             if (/^[0-9]$/.test(e.key)) {
                 digitarNumero(parseInt(e.key));
             }
@@ -269,6 +259,7 @@
             faseState.numbers = Array.from({ length: faseState.total }, (_, i) => phase.start + i);
             faseState.currentIdx = 0;
             faseState.inputTemp = "";
+            faseState.videoStage = 1; // Reinicia o controle de vídeo para a nova fase
 
             montarLayoutJogo();
             atualizarEstadoJogo();
@@ -283,6 +274,7 @@
                 `<button class="keypad-btn" onclick="digitarNumero(${n})">${n}</button>`
             ).join('');
 
+            // Adicionado ID 'caveVideo' para podermos controlá-lo via JavaScript
             container.innerHTML = `
                 <div class="game-area">
                     <div class="game-header">
@@ -297,7 +289,7 @@
                         <div class="path-fill" id="pathFill"></div>
                         
                         <div class="dragon-player" id="dragonPlayer"><img src="dragao1.gif" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3069/3069172.png'"></div>
-                        <div class="dragon-cave"><video src="casa.mp4" class="cave-img" autoplay loop muted playsinline></video></div>
+                        <div class="dragon-cave"><video id="caveVideo" src="casa.mp4" class="cave-img" autoplay loop muted playsinline></video></div>
                     </div>
                     
                     <div class="progress-container">
@@ -321,6 +313,38 @@
             document.getElementById('pathFill').style.width = `${progresso}%`;
             document.getElementById('dragonPlayer').style.marginLeft = `${Math.min(progresso, 85)}%`;
 
+            // === LÓGICA DE TROCA DE VÍDEO ===
+            // currentIdx vai de 0 a 49. Dividindo por 10 e somando 1, temos a fileira atual (1 a 5).
+            const fileiraAtual = Math.floor(faseState.currentIdx / 10) + 1;
+            
+            // Se chegou na 5ª fileira e o vídeo ainda for o primeiro (casa.mp4)
+            if (fileiraAtual >= 5 && faseState.videoStage === 1) {
+                faseState.videoStage = 2; // Atualiza para não engatilhar repetidas vezes
+                const caveVideo = document.getElementById('caveVideo');
+                
+                if (caveVideo) {
+                    caveVideo.src = 'casa2.mp4';
+                    caveVideo.load();
+                    caveVideo.play();
+                    
+                    // Conta 3 segundos exatos para trocar para o casa3.mp4
+                    setTimeout(() => {
+                        // Verifica se ainda estamos na etapa 2 (o jogador pode ter reiniciado a fase)
+                        if (faseState.videoStage === 2) {
+                            faseState.videoStage = 3;
+                            const finalVideo = document.getElementById('caveVideo');
+                            if (finalVideo) {
+                                finalVideo.src = 'casa3.mp4';
+                                finalVideo.loop = true; // Garante que o casa3 ficará em loop
+                                finalVideo.load();
+                                finalVideo.play();
+                            }
+                        }
+                    }, 3000);
+                }
+            }
+            // ================================
+
             faseState.numbers.forEach((n, i) => {
                 const cell = document.getElementById(`cell-${i}`);
                 if (!cell) return;
@@ -340,7 +364,6 @@
             document.getElementById('numDest').innerText = currentTarget;
             falar(currentTarget);
 
-            // ROLAGEM AUTOMÁTICA
             setTimeout(() => {
                 const currentCell = document.querySelector('.number-cell.current');
                 if (currentCell) {
@@ -358,7 +381,6 @@
             const cell = document.querySelector('.number-cell.current');
             if (cell) cell.innerText = faseState.inputTemp;
 
-            // Validação Direta Sem 'Enter'
             if (faseState.inputTemp === targetStr) {
                 tocarSom('acerto.ogg');
                 faseState.inputTemp = "";
@@ -383,7 +405,6 @@
             }
         }
 
-        // EXPLOSÃO DE COMEMORAÇÃO CONTÍNUA
         function vitoriaFase() {
             falar("Parabéns! Você completou a fase e ajudou o dragãozinho!", 0.9);
             tocarSom('fim_jogo.ogg');
@@ -416,7 +437,6 @@
 
         function voltarMenu() { location.reload(); }
 
-        // SISTEMA DE ACESSIBILIDADE
         function toggleAssistivo() {
             document.body.classList.toggle('assistivo');
             localStorage.setItem('modoAssistivo', document.body.classList.contains('assistivo'));
@@ -431,7 +451,6 @@
             
             document.getElementById('btnAssistivo').addEventListener('click', toggleAssistivo);
             
-            // Fullscreen
             document.getElementById('btnFullscreen').addEventListener('click', () => {
                 if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(()=>{}); } 
                 else { document.exitFullscreen().catch(()=>{}); }
