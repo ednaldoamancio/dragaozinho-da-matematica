@@ -1,0 +1,21 @@
+{
+  "name": "Trilha dos Números - Dragãozinho",
+  "short_name": "Trilha Números",
+  "description": "Jogo educativo e acessível para aprender as sequências numéricas.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0f24",
+  "theme_color": "#d4a843",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
