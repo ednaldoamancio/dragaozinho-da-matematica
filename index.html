@@ -57,6 +57,7 @@
         body.assistivo .number-cell.completed { background: #00FF00; color: #000; border-color: #00FF00; }
         body.assistivo .number-cell.current { background: #FFFF00; color: #000; border: 4px solid #FFF; }
         body.assistivo .keypad-btn { background: #000; color: #FFFF00; border: 3px solid #FFFF00; }
+        body.assistivo .keypad-btn.btn-apagar { background: #000 !important; border: 3px solid #e74c3c; color: #e74c3c !important; }
         body.assistivo .keypad-btn:active { background: #FFFF00; color: #000; }
         body.assistivo::before { display: none; }
         body.assistivo .elemento-flutuante { display: none; }
@@ -118,7 +119,6 @@
         .progress-bar { flex: 1; height: 10px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; min-width: 100px; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--verde-dragao), #0f0); transition: width 0.5s ease; }
         
-        /* Dragões e Casa MP4 ajustados */
         .dragons-area { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 5px 20px; margin: 0 10px; position: relative; }
         .dragon-player { position: relative; transition: margin-left 0.7s ease-out; z-index: 5; }
         
@@ -149,9 +149,18 @@
         
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
         
+        /* Ajuste do Teclado para incluir o Backspace */
         .keypad-container { flex-shrink: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 8px 10px 15px 10px; background: rgba(0,0,0,0.7); border-top: 2px solid var(--ouro-real); }
         .keypad-btn { background: linear-gradient(135deg, #f5c64a, #d4a843); color: #1a0a2e; font-size: clamp(20px, 5vw, 28px); font-weight: 900; padding: 8px 5px; border-radius: 10px; border: 2px solid #fff; cursor: pointer; transition: transform 0.1s; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
         .keypad-btn:active { transform: scale(0.92); background: #fff; }
+        
+        /* Novo estilo exclusivo para o botão de apagar */
+        .keypad-btn.btn-apagar { 
+            background: linear-gradient(135deg, #e74c3c, #c0392b); 
+            color: white; 
+            grid-column: span 5; /* Ocupa a largura inteira (5 colunas) na última linha */
+            font-size: clamp(16px, 4vw, 22px);
+        }
         
         .victory-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -228,13 +237,19 @@
         }
         function ativarSons() { audioAtivado = true; }
 
-        // Adicionei videoStage para controlar em qual etapa do vídeo a fase está
         let faseState = { ativa: null, total: 0, currentIdx: 0, numbers: [], inputTemp: "", videoStage: 1 };
 
+        // CAPTURA DO TECLADO FÍSICO
         document.addEventListener('keydown', (e) => {
             if (!faseState.ativa) return;
+            
+            // Digitar número
             if (/^[0-9]$/.test(e.key)) {
                 digitarNumero(parseInt(e.key));
+            } 
+            // Apagar número com a tecla Backspace
+            else if (e.key === 'Backspace') {
+                apagarNumero();
             }
         });
 
@@ -259,7 +274,7 @@
             faseState.numbers = Array.from({ length: faseState.total }, (_, i) => phase.start + i);
             faseState.currentIdx = 0;
             faseState.inputTemp = "";
-            faseState.videoStage = 1; // Reinicia o controle de vídeo para a nova fase
+            faseState.videoStage = 1; 
 
             montarLayoutJogo();
             atualizarEstadoJogo();
@@ -270,11 +285,14 @@
             
             let htmlGrid = faseState.numbers.map((n, i) => `<div class="number-cell" id="cell-${i}">?</div>`).join('');
             
+            // Gerar botões numéricos
             let htmlTeclado = [1,2,3,4,5,6,7,8,9,0].map(n => 
                 `<button class="keypad-btn" onclick="digitarNumero(${n})">${n}</button>`
             ).join('');
+            
+            // Adicionar botão de Apagar no teclado virtual
+            htmlTeclado += `<button class="keypad-btn btn-apagar" onclick="apagarNumero()">⌫ APAGAR</button>`;
 
-            // Adicionado ID 'caveVideo' para podermos controlá-lo via JavaScript
             container.innerHTML = `
                 <div class="game-area">
                     <div class="game-header">
@@ -313,13 +331,10 @@
             document.getElementById('pathFill').style.width = `${progresso}%`;
             document.getElementById('dragonPlayer').style.marginLeft = `${Math.min(progresso, 85)}%`;
 
-            // === LÓGICA DE TROCA DE VÍDEO ===
-            // currentIdx vai de 0 a 49. Dividindo por 10 e somando 1, temos a fileira atual (1 a 5).
             const fileiraAtual = Math.floor(faseState.currentIdx / 10) + 1;
             
-            // Se chegou na 5ª fileira e o vídeo ainda for o primeiro (casa.mp4)
             if (fileiraAtual >= 5 && faseState.videoStage === 1) {
-                faseState.videoStage = 2; // Atualiza para não engatilhar repetidas vezes
+                faseState.videoStage = 2; 
                 const caveVideo = document.getElementById('caveVideo');
                 
                 if (caveVideo) {
@@ -327,15 +342,13 @@
                     caveVideo.load();
                     caveVideo.play();
                     
-                    // Conta 3 segundos exatos para trocar para o casa3.mp4
                     setTimeout(() => {
-                        // Verifica se ainda estamos na etapa 2 (o jogador pode ter reiniciado a fase)
                         if (faseState.videoStage === 2) {
                             faseState.videoStage = 3;
                             const finalVideo = document.getElementById('caveVideo');
                             if (finalVideo) {
                                 finalVideo.src = 'casa3.mp4';
-                                finalVideo.loop = true; // Garante que o casa3 ficará em loop
+                                finalVideo.loop = true; 
                                 finalVideo.load();
                                 finalVideo.play();
                             }
@@ -343,7 +356,6 @@
                     }, 3000);
                 }
             }
-            // ================================
 
             faseState.numbers.forEach((n, i) => {
                 const cell = document.getElementById(`cell-${i}`);
@@ -370,6 +382,22 @@
                     currentCell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
                 }
             }, 100);
+        }
+
+        // FUNÇÃO DE APAGAR O NÚMERO
+        function apagarNumero() {
+            if (faseState.currentIdx >= faseState.total) return; // Se a fase acabou, ignora
+            
+            if (faseState.inputTemp.length > 0) {
+                // Remove o último caractere da string
+                faseState.inputTemp = faseState.inputTemp.slice(0, -1);
+                
+                // Atualiza visualmente na tela
+                const cell = document.querySelector('.number-cell.current');
+                if (cell) {
+                    cell.innerText = faseState.inputTemp || '?';
+                }
+            }
         }
 
         function digitarNumero(n) {
