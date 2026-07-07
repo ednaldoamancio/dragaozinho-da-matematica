@@ -122,12 +122,14 @@
         .dragons-area { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 5px 20px; margin: 0 10px; position: relative; }
         .dragon-player { position: relative; transition: margin-left 0.7s ease-out; z-index: 5; }
         
-        /* Dragão levemente menor que a casa */
-        .dragon-player img { width: 70px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+        /* ---> AQUI VOCÊ MUDA O TAMANHO DO DRAGÃO <--- */
+        /* width: 140px é o dobro do tamanho anterior */
+        .dragon-player img { width: 140px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
         .dragon-cave { text-align: center; z-index: 5; }
         
-        /* Casa MP4 com proporção sutilmente maior que o dragão */
-        .cave-img { width: 75px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); border-radius: 8px; }
+        /* ---> AQUI VOCÊ MUDA O TAMANHO DA CASA EM VÍDEO <--- */
+        /* width: 150px é o dobro do tamanho anterior */
+        .cave-img { width: 150px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); border-radius: 8px; }
         
         .path-line { position: absolute; top: 50%; left: 15%; right: 15%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 10px; transform: translateY(-50%); z-index: 0; }
         .path-fill { position: absolute; top: 50%; left: 15%; height: 6px; background: linear-gradient(90deg, var(--verde-dragao), #0f0); border-radius: 10px; transform: translateY(-50%); transition: width 0.5s ease; z-index: 1; }
@@ -164,8 +166,10 @@
         .btn-reiniciar:hover { transform: scale(1.05); }
 
         @media (max-width: 768px) {
-            .dragon-player img { width: 60px; }
-            .cave-img { width: 65px; }
+            /* ---> AQUI VOCÊ MUDA OS TAMANHOS PARA CELULARES E TABLETS <--- */
+            .dragon-player img { width: 120px; } /* Dobro do anterior (60px) */
+            .cave-img { width: 130px; } /* Dobro do anterior (65px) */
+            
             .number-cell { font-size: 18px; border-width: 1px; }
             .keypad-btn { padding: 8px 5px; font-size: 22px; }
         }
@@ -291,7 +295,7 @@
                     <div class="dragons-area">
                         <div class="path-line"></div>
                         <div class="path-fill" id="pathFill"></div>
-                        <!-- Inserção do vídeo da casa substituindo o gif antigo -->
+                        
                         <div class="dragon-player" id="dragonPlayer"><img src="dragao1.gif" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3069/3069172.png'"></div>
                         <div class="dragon-cave"><video src="casa.mp4" class="cave-img" autoplay loop muted playsinline></video></div>
                     </div>
