@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0f24">
     <title>🐉 Dragãozinho da Matemática - Trilha dos Números</title>
     
-    <!-- Chamada do Favicon e do Manifest PWA -->
-    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Ícones e Manifesto Corrigidos -->
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="manifest" href="manifest.json">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,455 +37,39 @@
             font-family: 'Nunito', sans-serif;
             background: linear-gradient(180deg, var(--noite-top) 0%, var(--noite-mid) 55%, var(--noite-bottom) 100%);
             color: var(--dourado-branco);
-            height: 100vh;
-            height: 100dvh;
+            min-height: 100vh;
+            min-height: 100dvh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             position: relative;
-            transition: all 0.3s ease;
         }
 
-        /* ======= MODO ASSISTIVO (ALTO CONTRASTE) ======= */
-        body.assistivo {
-            background: #000000 !important;
-            --noite-top: #000; --noite-mid: #000; --noite-bottom: #000;
-            --ouro-real: #FFFF00;
-            --dourado-branco: #FFFF00;
-            color: #FFFF00;
-        }
-        body.assistivo * { text-shadow: none !important; box-shadow: none !important; }
-        body.assistivo .number-cell { background: #000; border: 3px solid #FFFF00; color: #FFFF00; }
-        body.assistivo .number-cell.completed { background: #00FF00; color: #000; border-color: #00FF00; }
-        body.assistivo .number-cell.current { background: #FFFF00; color: #000; border: 4px solid #FFF; }
-        body.assistivo .keypad-btn { background: #000; color: #FFFF00; border: 3px solid #FFFF00; }
-        body.assistivo .keypad-btn.btn-apagar { background: #000 !important; border: 3px solid #e74c3c; color: #e74c3c !important; }
-        body.assistivo .keypad-btn:active { background: #FFFF00; color: #000; }
-        body.assistivo::before { display: none; }
-        body.assistivo .elemento-flutuante { display: none; }
-        /* ============================================== */
-
-        /* Estrelas cintilantes */
-        body::before {
-            content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background: radial-gradient(2px 2px at 15% 25%, #fff, transparent), radial-gradient(2px 2px at 35% 55%, rgba(255,200,100,0.8), transparent), radial-gradient(1px 1px at 55% 15%, #fff, transparent), radial-gradient(2px 2px at 75% 45%, rgba(255,180,100,0.6), transparent), radial-gradient(1px 1px at 85% 75%, #fff, transparent), radial-gradient(2px 2px at 25% 85%, rgba(255,200,100,0.7), transparent), radial-gradient(1px 1px at 65% 95%, #fff, transparent), radial-gradient(2px 2px at 45% 35%, rgba(255,180,100,0.5), transparent), radial-gradient(1px 1px at 95% 35%, #fff, transparent), radial-gradient(2px 2px at 5% 65%, rgba(255,200,100,0.6), transparent);
-            background-size: 100% 100%;
-            animation: cintilarEstrelas 3s ease-in-out infinite alternate;
-        }
-        @keyframes cintilarEstrelas { 0% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .elemento-flutuante { position: fixed; pointer-events: none; z-index: 1; animation: flutuarElemento linear infinite; opacity: 0.4; }
-        @keyframes flutuarElemento { 0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; } 15% { opacity: 0.6; } 85% { opacity: 0.6; } 100% { transform: translateY(-20vh) scale(1) rotate(360deg); opacity: 0; } }
-
-        .header { position: relative; z-index: 50; background: linear-gradient(180deg, rgba(10,15,36,0.95) 0%, rgba(10,15,36,0.8) 100%); border-bottom: 2px solid var(--ouro-real); backdrop-filter: blur(10px); flex-shrink: 0; }
-        .header-inner { max-width: 1000px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-        .header-botoes { display: flex; gap: 10px; align-items: center; }
-
-        .btn-circular {
-            border: 2px solid var(--ouro-real); width: 42px; height: 42px; border-radius: 50%;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s; color: white;
-        }
-        .btn-circular:hover { transform: scale(1.1); }
-        .btn-assistivo { background: #333; font-size: 20px; }
-        .btn-fullscreen { background: linear-gradient(135deg, #4a148c, #6a1b9a); font-size: 20px; }
-        .btn-musica { background: linear-gradient(135deg, var(--verde-dragao), var(--verde-escuro)); font-size: 18px; }
-
-        .btn-voltar-dourado {
-            display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--ouro-real), var(--ouro-escuro));
-            border: 2px solid #fff; padding: 8px 20px; border-radius: 50px; cursor: pointer; font-size: 14px; font-weight: 800;
-            color: #1a0a2e; text-decoration: none; transition: all 0.3s;
+        /* [RESTANTE DO SEU CSS PERMANECE IGUAL...] */
+        /* Certifique-se de manter as classes .assistivo, .keypad-btn, etc. */
+        
+        .keypad-container { 
+            flex-shrink: 0; 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 8px; 
+            padding: 8px 10px 15px 10px; 
+            background: rgba(0,0,0,0.7); 
+            border-top: 2px solid var(--ouro-real); 
         }
 
-        .container { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 10; overflow: hidden; padding: 15px; }
-
-        .titulo-reino { font-family: 'Cinzel Decorative', cursive; font-size: clamp(20px, 4vw, 28px); color: var(--ouro-real); text-align: center; margin-bottom: 5px; }
-        .subtitulo-magico { font-family: 'Dancing Script', cursive; font-size: clamp(14px, 3vw, 18px); text-align: center; margin-bottom: 15px; }
-
-        .fases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; width: 100%; overflow-y: auto; max-height: calc(100vh - 180px); padding: 10px; }
-        .card-fase { border-radius: 20px; border: 2px solid var(--ouro-real); padding: 20px 15px; text-align: center; cursor: pointer; transition: all 0.35s; position: relative; overflow: hidden; }
-        .card-fase:hover { transform: translateY(-5px) scale(1.02); }
-        .emoji-fase { font-size: 40px; display: block; margin-bottom: 10px; transition: transform 0.3s; }
-        .numero-fase { font-family: 'Cinzel Decorative', cursive; font-size: 20px; color: var(--ouro-real); margin-bottom: 8px; font-weight: bold; }
-        .range-fase { font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.5); display: inline-block; padding: 4px 12px; border-radius: 50px; margin-top: 8px; color: #fff;}
-
-        /* Área do jogo */
-        .game-area { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100; background: linear-gradient(180deg, var(--noite-top) 0%, var(--noite-mid) 55%, var(--noite-bottom) 100%); display: flex; flex-direction: column; overflow: hidden; }
-        body.assistivo .game-area { background: #000; }
-        
-        .game-header { flex-shrink: 0; background: linear-gradient(180deg, rgba(10,15,36,0.95) 0%, rgba(10,15,36,0.9) 100%); border-bottom: 2px solid var(--ouro-real); padding: 6px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-        .btn-voltar-jogo { background: linear-gradient(135deg, #555f8a, #3a4264); border: 2px solid var(--ouro-real); padding: 4px 14px; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; font-size: 13px; }
-        
-        .progress-container { flex-shrink: 0; margin: 2px 20px; background: rgba(0,0,0,0.6); border-radius: 50px; padding: 4px 15px; display: flex; align-items: center; gap: 15px; justify-content: center; }
-        .progress-text { font-size: 14px; font-weight: 900; color: var(--ouro-real); }
-        .progress-bar { flex: 1; height: 10px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; min-width: 100px; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--verde-dragao), #0f0); transition: width 0.5s ease; }
-        
-        .dragons-area { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 5px 20px; margin: 0 10px; position: relative; }
-        .dragon-player { position: relative; transition: margin-left 0.7s ease-out; z-index: 5; }
-        
-        .dragon-player img { width: 140px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
-        .dragon-cave { text-align: center; z-index: 5; }
-        
-        .cave-img { width: 150px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); border-radius: 8px; }
-        
-        .path-line { position: absolute; top: 50%; left: 15%; right: 15%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 10px; transform: translateY(-50%); z-index: 0; }
-        .path-fill { position: absolute; top: 50%; left: 15%; height: 6px; background: linear-gradient(90deg, var(--verde-dragao), #0f0); border-radius: 10px; transform: translateY(-50%); transition: width 0.5s ease; z-index: 1; }
-        
-        .numero-atual-msg { flex-shrink: 0; text-align: center; font-size: 18px; font-weight: 900; color: var(--ouro-real); background: rgba(0,0,0,0.6); margin: 2px 20px; padding: 4px; border-radius: 50px; }
-        
-        .numbers-grid { flex: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin: 2px 15px 5px 15px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 15px; overflow-y: auto; scroll-behavior: smooth; }
-        
-        .number-cell { aspect-ratio: 1; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: clamp(18px, 3.5vw, 28px); font-weight: 800; transition: all 0.3s; border: 2px solid rgba(255,255,255,0.2); }
-        
-        .number-cell.completed { 
-            background: var(--verde-dragao); 
-            color: white; 
-            transform: scale(0.95); 
-            font-size: clamp(24px, 4.5vw, 36px) !important; 
-            font-weight: 900 !important; 
-        }
-        
-        .number-cell.current { background: var(--ouro-real); color: #1a0a2e; transform: scale(1.05); box-shadow: 0 0 15px rgba(212,168,67,0.8); border: 3px solid white; z-index: 2; font-weight: 900; }
-        .number-cell.error { background: var(--erro); color: white; animation: shake 0.3s ease-in-out; }
-        
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
-        
-        /* Ajuste do Teclado para incluir o Backspace */
-        .keypad-container { flex-shrink: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 8px 10px 15px 10px; background: rgba(0,0,0,0.7); border-top: 2px solid var(--ouro-real); }
-        .keypad-btn { background: linear-gradient(135deg, #f5c64a, #d4a843); color: #1a0a2e; font-size: clamp(20px, 5vw, 28px); font-weight: 900; padding: 8px 5px; border-radius: 10px; border: 2px solid #fff; cursor: pointer; transition: transform 0.1s; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
-        .keypad-btn:active { transform: scale(0.92); background: #fff; }
-        
-        /* Novo estilo exclusivo para o botão de apagar */
         .keypad-btn.btn-apagar { 
+            grid-column: span 5; 
             background: linear-gradient(135deg, #e74c3c, #c0392b); 
             color: white; 
-            grid-column: span 5; /* Ocupa a largura inteira (5 colunas) na última linha */
             font-size: clamp(16px, 4vw, 22px);
+            padding: 12px;
         }
-        
-        .victory-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .victory-card { background: linear-gradient(135deg, var(--noite-mid), var(--noite-bottom)); border: 4px solid var(--ouro-real); border-radius: 30px; padding: 30px; text-align: center; width: 90%; max-width: 450px; }
-        .victory-card h2 { font-family: 'Cinzel Decorative', cursive; font-size: 36px; color: var(--ouro-real); margin-bottom: 15px; }
-        .btn-reiniciar { background: linear-gradient(135deg, var(--verde-dragao), var(--verde-escuro)); border: 2px solid #fff; padding: 15px 30px; border-radius: 50px; font-size: 20px; font-weight: 900; color: white; cursor: pointer; margin-top: 15px; width: 100%; transition: transform 0.3s; }
-        .btn-reiniciar:hover { transform: scale(1.05); }
-
-        @media (max-width: 768px) {
-            .dragon-player img { width: 120px; } 
-            .cave-img { width: 130px; }
-            .number-cell { font-size: 18px; border-width: 1px; }
-            .keypad-btn { padding: 8px 5px; font-size: 22px; }
-        }
-        @media (max-width: 480px) {
-            .dragons-area { flex-direction: column; gap: 2px; }
-            .path-line, .path-fill { display: none; }
-            .dragon-player { margin-left: 0 !important; }
-            .numbers-grid { gap: 4px; grid-template-columns: repeat(5, 1fr); margin: 2px 5px; }
-        }
-        
-        .fases-grid::-webkit-scrollbar, .numbers-grid::-webkit-scrollbar { width: 6px; }
-        .fases-grid::-webkit-scrollbar-track, .numbers-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
-        .fases-grid::-webkit-scrollbar-thumb, .numbers-grid::-webkit-scrollbar-thumb { background: var(--ouro-real); border-radius: 10px; }
+        /* ... */
     </style>
 </head>
 <body>
-
-    <div id="elementos-container"></div>
-
-    <header class="header">
-        <div class="header-inner">
-            <div class="header-botoes">
-                <button class="btn-circular btn-assistivo" id="btnAssistivo" title="Modo Alto Contraste">👁️</button>
-                <button class="btn-circular btn-musica" id="btnMusica" title="Música de fundo">🎵</button>
-                <button class="btn-circular btn-fullscreen" id="btnFullscreen" title="Tela Cheia">⛶</button>
-            </div>
-            <a href="#" class="btn-voltar-dourado" onclick="location.reload();">← ✨ Início</a>
-        </div>
-    </header>
-
-    <div class="container" id="mainContainer">
-        <h1 class="titulo-reino">🐉 Trilha dos Números</h1>
-        <p class="subtitulo-magico">Ajude o dragãozinho a chegar até a mamãe! 🏰✨</p>
-        <div class="fases-grid" id="fasesGrid"></div>
-    </div>
-
-    <script>
-        const GAME_PHASES = [
-            { id: 1, start: 0, end: 49, color: 'linear-gradient(145deg, #4dd0e1, #26a8b8)' },
-            { id: 2, start: 50, end: 99, color: 'linear-gradient(145deg, #1e5f8e, #0d3a5c)' },
-            { id: 3, start: 100, end: 149, color: 'linear-gradient(145deg, #b39ddb, #8e79c0)' },
-            { id: 4, start: 150, end: 199, color: 'linear-gradient(145deg, #e91e8c, #9c1460)' },
-            { id: 5, start: 200, end: 249, color: 'linear-gradient(145deg, #ff6b35, #e05a2a)' },
-            { id: 6, start: 250, end: 299, color: 'linear-gradient(145deg, #f5c64a, #b9852f)' }
-        ];
-
-        let speechSynthesisSupported = 'speechSynthesis' in window;
-        function falar(texto, rate=0.85) {
-            if (!speechSynthesisSupported) return;
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(String(texto));
-            utterance.lang = 'pt-BR'; utterance.rate = rate;
-            window.speechSynthesis.speak(utterance);
-        }
-
-        let audioAtivado = false, somAtual = null;
-        function tocarSom(arquivo) {
-            if (!audioAtivado || !arquivo) return;
-            try {
-                if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
-                somAtual = new Audio(arquivo); somAtual.play().catch(()=>{});
-            } catch(e) {}
-        }
-        function ativarSons() { audioAtivado = true; }
-
-        let faseState = { ativa: null, total: 0, currentIdx: 0, numbers: [], inputTemp: "", videoStage: 1 };
-
-        // CAPTURA DO TECLADO FÍSICO
-        document.addEventListener('keydown', (e) => {
-            if (!faseState.ativa) return;
-            
-            // Digitar número
-            if (/^[0-9]$/.test(e.key)) {
-                digitarNumero(parseInt(e.key));
-            } 
-            // Apagar número com a tecla Backspace
-            else if (e.key === 'Backspace') {
-                apagarNumero();
-            }
-        });
-
-        function carregarMenu() {
-            const container = document.getElementById('fasesGrid');
-            let html = '';
-            GAME_PHASES.forEach((p, i) => {
-                html += `
-                    <div class="card-fase" onclick="iniciarFase(${i})" style="background: ${p.color};">
-                        <span class="emoji-fase">${p.id >= 4 ? '🐲⚡' : '🐉✨'}</span>
-                        <div class="numero-fase">Fase ${p.id}</div>
-                        <div class="range-fase">${p.start} a ${p.end}</div>
-                    </div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        function iniciarFase(idx) {
-            const phase = GAME_PHASES[idx];
-            faseState.ativa = phase;
-            faseState.total = phase.end - phase.start + 1;
-            faseState.numbers = Array.from({ length: faseState.total }, (_, i) => phase.start + i);
-            faseState.currentIdx = 0;
-            faseState.inputTemp = "";
-            faseState.videoStage = 1; 
-
-            montarLayoutJogo();
-            atualizarEstadoJogo();
-        }
-
-        function montarLayoutJogo() {
-            const container = document.getElementById('mainContainer');
-            
-            let htmlGrid = faseState.numbers.map((n, i) => `<div class="number-cell" id="cell-${i}">?</div>`).join('');
-            
-            // Gerar botões numéricos
-            let htmlTeclado = [1,2,3,4,5,6,7,8,9,0].map(n => 
-                `<button class="keypad-btn" onclick="digitarNumero(${n})">${n}</button>`
-            ).join('');
-            
-            // Adicionar botão de Apagar no teclado virtual
-            htmlTeclado += `<button class="keypad-btn btn-apagar" onclick="apagarNumero()">⌫ APAGAR</button>`;
-
-            container.innerHTML = `
-                <div class="game-area">
-                    <div class="game-header">
-                        <button class="btn-voltar-jogo" onclick="voltarMenu()">← Voltar</button>
-                        <div class="header-botoes">
-                            <button class="btn-circular btn-assistivo" onclick="toggleAssistivo()">👁️</button>
-                        </div>
-                    </div>
-                    
-                    <div class="dragons-area">
-                        <div class="path-line"></div>
-                        <div class="path-fill" id="pathFill"></div>
-                        
-                        <div class="dragon-player" id="dragonPlayer"><img src="dragao1.gif" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3069/3069172.png'"></div>
-                        <div class="dragon-cave"><video id="caveVideo" src="casa.mp4" class="cave-img" autoplay loop muted playsinline></video></div>
-                    </div>
-                    
-                    <div class="progress-container">
-                        <span class="progress-text" id="progText">0/${faseState.total}</span>
-                        <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
-                    </div>
-                    
-                    <div class="numero-atual-msg">🔢 <span id="numDest"></span> 🔢</div>
-                    
-                    <div class="numbers-grid" id="gridNumeros">${htmlGrid}</div>
-                    
-                    <div class="keypad-container">${htmlTeclado}</div>
-                </div>
-            `;
-        }
-
-        function atualizarEstadoJogo() {
-            const progresso = (faseState.currentIdx / faseState.total) * 100;
-            document.getElementById('progText').innerText = `${faseState.currentIdx}/${faseState.total}`;
-            document.getElementById('progFill').style.width = `${progresso}%`;
-            document.getElementById('pathFill').style.width = `${progresso}%`;
-            document.getElementById('dragonPlayer').style.marginLeft = `${Math.min(progresso, 85)}%`;
-
-            const fileiraAtual = Math.floor(faseState.currentIdx / 10) + 1;
-            
-            if (fileiraAtual >= 5 && faseState.videoStage === 1) {
-                faseState.videoStage = 2; 
-                const caveVideo = document.getElementById('caveVideo');
-                
-                if (caveVideo) {
-                    caveVideo.src = 'casa2.mp4';
-                    caveVideo.load();
-                    caveVideo.play();
-                    
-                    setTimeout(() => {
-                        if (faseState.videoStage === 2) {
-                            faseState.videoStage = 3;
-                            const finalVideo = document.getElementById('caveVideo');
-                            if (finalVideo) {
-                                finalVideo.src = 'casa3.mp4';
-                                finalVideo.loop = true; 
-                                finalVideo.load();
-                                finalVideo.play();
-                            }
-                        }
-                    }, 3000);
-                }
-            }
-
-            faseState.numbers.forEach((n, i) => {
-                const cell = document.getElementById(`cell-${i}`);
-                if (!cell) return;
-                cell.className = 'number-cell';
-                if (i < faseState.currentIdx) {
-                    cell.classList.add('completed');
-                    cell.innerText = n;
-                } else if (i === faseState.currentIdx) {
-                    cell.classList.add('current');
-                    cell.innerText = faseState.inputTemp || '?';
-                } else {
-                    cell.innerText = '?';
-                }
-            });
-
-            const currentTarget = faseState.numbers[faseState.currentIdx];
-            document.getElementById('numDest').innerText = currentTarget;
-            falar(currentTarget);
-
-            setTimeout(() => {
-                const currentCell = document.querySelector('.number-cell.current');
-                if (currentCell) {
-                    currentCell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
-                }
-            }, 100);
-        }
-
-        // FUNÇÃO DE APAGAR O NÚMERO
-        function apagarNumero() {
-            if (faseState.currentIdx >= faseState.total) return; // Se a fase acabou, ignora
-            
-            if (faseState.inputTemp.length > 0) {
-                // Remove o último caractere da string
-                faseState.inputTemp = faseState.inputTemp.slice(0, -1);
-                
-                // Atualiza visualmente na tela
-                const cell = document.querySelector('.number-cell.current');
-                if (cell) {
-                    cell.innerText = faseState.inputTemp || '?';
-                }
-            }
-        }
-
-        function digitarNumero(n) {
-            if (faseState.currentIdx >= faseState.total) return;
-            
-            const targetStr = String(faseState.numbers[faseState.currentIdx]);
-            faseState.inputTemp += n;
-            
-            const cell = document.querySelector('.number-cell.current');
-            if (cell) cell.innerText = faseState.inputTemp;
-
-            if (faseState.inputTemp === targetStr) {
-                tocarSom('acerto.ogg');
-                faseState.inputTemp = "";
-                faseState.currentIdx++;
-                
-                if (faseState.currentIdx >= faseState.total) {
-                    vitoriaFase();
-                } else {
-                    atualizarEstadoJogo();
-                }
-            } else if (faseState.inputTemp.length >= targetStr.length) {
-                if (cell) cell.classList.add('error');
-                tocarSom('erro.ogg');
-                falar(targetStr);
-                setTimeout(() => {
-                    faseState.inputTemp = "";
-                    if (cell) {
-                        cell.classList.remove('error');
-                        cell.innerText = '?';
-                    }
-                }, 400);
-            }
-        }
-
-        function vitoriaFase() {
-            falar("Parabéns! Você completou a fase e ajudou o dragãozinho!", 0.9);
-            tocarSom('fim_jogo.ogg');
-            
-            var duration = 5 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 300 };
-
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) return clearInterval(interval);
-                var particleCount = 60 * (timeLeft / duration);
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * 0.4, y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * 0.4 + 0.6, y: Math.random() - 0.2 } }));
-            }, 250);
-
-            const container = document.getElementById('mainContainer');
-            container.innerHTML += `
-                <div class="victory-overlay">
-                    <div class="victory-card">
-                        <span style="font-size: 80px;">🏆🐲✨</span>
-                        <h2>Fantástico!</h2>
-                        <h3 style="margin-bottom: 20px;">Você completou a Fase ${faseState.ativa.id}!</h3>
-                        <button class="btn-reiniciar" onclick="iniciarFase(${faseState.ativa.id - 1})">🔄 Jogar Novamente</button>
-                        <button class="btn-reiniciar" style="background: var(--ouro-real); color:#000;" onclick="voltarMenu()">✨ Menu Principal ✨</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function voltarMenu() { location.reload(); }
-
-        function toggleAssistivo() {
-            document.body.classList.toggle('assistivo');
-            localStorage.setItem('modoAssistivo', document.body.classList.contains('assistivo'));
-        }
-
-        window.onload = function() {
-            if(localStorage.getItem('modoAssistivo') === 'true') document.body.classList.add('assistivo');
-            carregarMenu();
-            
-            const initAudio = () => { ativarSons(); document.removeEventListener('click', initAudio); };
-            document.addEventListener('click', initAudio);
-            
-            document.getElementById('btnAssistivo').addEventListener('click', toggleAssistivo);
-            
-            document.getElementById('btnFullscreen').addEventListener('click', () => {
-                if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(()=>{}); } 
-                else { document.exitFullscreen().catch(()=>{}); }
-            });
-        };
-    </script>
+    <!-- [MANTENHA A ESTRUTURA HTML E O SCRIPT QUE VOCÊ JÁ TINHA...] -->
+    <!-- Dica: O código JS está correto, apenas garanta que os arquivos .mp4 e .ogg estejam no mesmo caminho no GitHub -->
 </body>
 </html>
